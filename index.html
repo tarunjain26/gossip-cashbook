@@ -480,7 +480,8 @@ function verifyPin() {
 // ══════════════════════════════════════════
 function initCashbook() {
   const today = new Date();
-  document.getElementById('sel-date').value = today.toISOString().split('T')[0];
+  currentDate = today.toISOString().split('T')[0];
+  document.getElementById('sel-date').value = currentDate;
   setLedgerDate(today);
   setEditBanner(false);
   calc();
@@ -496,6 +497,7 @@ function initCashbook() {
 let autoSaveTimer = null;
 let lastSavedPayload = null;
 let isSwitchingDate = false;
+let currentDate = null; // tracks the date we are currently working on
 
 function startAutoSave() {
   if (autoSaveTimer) clearInterval(autoSaveTimer);
@@ -528,41 +530,48 @@ function silentSave() {
 }
 
 async function onDateChange() {
+  // newDate is what user just picked
   const newDate = document.getElementById('sel-date').value;
 
-  // ── STEP 1: Capture old date payload BEFORE date input changes anything ──
-  const oldPayload = hasFormData() ? JSON.stringify(buildPayload()) : null;
+  // Guard — if same date selected again, do nothing
+  if (newDate === currentDate) return;
 
-  // ── STEP 2: Update date label ──
-  const d = new Date(newDate + 'T00:00:00');
-  setLedgerDate(d);
+  // ── STEP 1: Lock everything immediately ──
+  isSwitchingDate = true;
+  document.getElementById('sel-date').disabled = true;
 
-  // ── STEP 3: Save old date's data if there was any ──
-  if (oldPayload) {
+  // ── STEP 2: Save OLD date data using currentDate (not from input) ──
+  if (hasFormData()) {
+    // currentDate still holds the old date here — buildPayload() uses it
     setStatus('saving');
     try {
       await fetch(APPS_SCRIPT_URL, {
         method: 'POST', mode: 'no-cors',
         headers: {'Content-Type': 'text/plain'},
-        body: oldPayload
+        body: JSON.stringify(buildPayload())
       });
-      lastSavedPayload = null; // reset so new date starts fresh
     } catch(err) {}
   }
 
-  // ── STEP 4: Lock auto-save during transition ──
-  isSwitchingDate = true;
+  // ── STEP 3: Now switch currentDate to the new date ──
+  currentDate = newDate;
+  lastSavedPayload = null;
 
-  // ── STEP 5: Clear form completely ──
-  resetForm();
-  setEditBanner(false);
+  // ── STEP 4: Update UI for new date ──
+  const d = new Date(newDate + 'T00:00:00');
+  setLedgerDate(d);
   setStatus('loading');
 
-  // ── STEP 6: Load new date's data ──
+  // ── STEP 5: Hard reset form ──
+  resetForm();
+  setEditBanner(false);
+
+  // ── STEP 6: Load new date from Sheets ──
   await loadDateData(newDate);
 
-  // ── STEP 7: Unlock auto-save ──
+  // ── STEP 7: Unlock ──
   isSwitchingDate = false;
+  document.getElementById('sel-date').disabled = false;
 }
 
 async function loadDateData(dateVal) {
@@ -808,7 +817,7 @@ function setStatus(state, msg) {
 }
 
 function buildPayload() {
-  const date = document.getElementById('sel-date').value;
+  const date = currentDate; // always use JS-tracked date, never read from input mid-switch
   return {
     outlet: currentOutlet,
     date,
