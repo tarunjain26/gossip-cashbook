@@ -498,6 +498,7 @@ let autoSaveTimer = null;
 let lastSavedPayload = null;
 let isSwitchingDate = false;
 let currentDate = null; // tracks the date we are currently working on
+let isLoadedData = false; // true when form was populated from Sheets, not by user
 
 function startAutoSave() {
   if (autoSaveTimer) clearInterval(autoSaveTimer);
@@ -506,6 +507,7 @@ function startAutoSave() {
 
 async function autoSave() {
   if (isSwitchingDate) return;   // never fire mid-switch
+  if (isLoadedData) return;       // never re-save data that came from Sheets
   if (!hasFormData()) return;
   const payload = JSON.stringify(buildPayload());
   if (payload === lastSavedPayload) return; // nothing changed since last save
@@ -525,6 +527,7 @@ async function autoSave() {
 
 function silentSave() {
   if (!hasFormData()) return;
+  if (isLoadedData) return;
   const payload = JSON.stringify(buildPayload());
   navigator.sendBeacon(APPS_SCRIPT_URL, payload);
 }
@@ -540,8 +543,8 @@ async function onDateChange() {
   isSwitchingDate = true;
   document.getElementById('sel-date').disabled = true;
 
-  // ── STEP 2: Save OLD date data using currentDate (not from input) ──
-  if (hasFormData()) {
+  // ── STEP 2: Save OLD date data — only if user actually entered/changed data ──
+  if (hasFormData() && !isLoadedData) {
     // currentDate still holds the old date here — buildPayload() uses it
     setStatus('saving');
     try {
@@ -621,6 +624,7 @@ function setEditBanner(show, dateVal, isToday) {
 }
 
 function populateForm(data) {
+  isLoadedData = true;
   resetForm();
 
   // Simple fields
@@ -649,6 +653,8 @@ function populateForm(data) {
   });
 
   calc();
+  // Mark as loaded — any subsequent change by user will flip this to false
+  setTimeout(() => { isLoadedData = false; }, 500);
 }
 
 function hasFormData() {
@@ -846,6 +852,7 @@ function buildPayload() {
 }
 
 async function saveToSheet() {
+  isLoadedData = false; // user explicitly saving — mark as user data
   setStatus('saving');
   try {
     await fetch(APPS_SCRIPT_URL, {
