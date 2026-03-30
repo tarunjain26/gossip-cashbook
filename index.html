@@ -124,6 +124,10 @@ input.f-sub{padding:6px 9px;font-size:12px;font-weight:500;border:0.5px solid #d
 .save-status.saved{color:var(--green-mid)}
 .save-status.saving{color:var(--gold)}
 .save-status.error{color:var(--red-mid)}
+.save-status.loading{color:var(--gold)}
+.edit-banner{background:#1a4a2e;color:#fff;border-radius:var(--radius);padding:0.6rem 1.5rem;display:none;align-items:center;justify-content:space-between;margin-bottom:0.75rem;font-size:13px}
+.edit-banner.visible{display:flex}
+.edit-badge{background:rgba(255,255,255,0.2);padding:3px 10px;border-radius:6px;font-size:11px;font-weight:500;letter-spacing:0.05em}
 .btn-save{padding:9px 24px;background:var(--green-dark);color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:500;font-family:'DM Sans',sans-serif;cursor:pointer}
 .btn-save:hover{background:#0f3020}
 .btn-save:disabled{opacity:0.5;cursor:not-allowed}
@@ -364,6 +368,12 @@ input.f-sub{padding:6px 9px;font-size:12px;font-weight:500;border:0.5px solid #d
       </div>
     </div>
 
+    <!-- EDIT BANNER -->
+    <div class="edit-banner" id="edit-banner">
+      <span id="edit-banner-text">Viewing saved data</span>
+      <span class="edit-badge">EDITING PAST DATE</span>
+    </div>
+
     <!-- SAVE BAR -->
     <div class="save-bar">
       <span class="save-status" id="save-status">Unsaved changes</span>
@@ -471,13 +481,103 @@ function initCashbook() {
   const today = new Date();
   document.getElementById('sel-date').value = today.toISOString().split('T')[0];
   setLedgerDate(today);
+  setEditBanner(false);
   calc();
 }
 
-function onDateChange() {
-  const d = new Date(document.getElementById('sel-date').value + 'T00:00:00');
+async function onDateChange() {
+  const dateVal = document.getElementById('sel-date').value;
+  const d = new Date(dateVal + 'T00:00:00');
   setLedgerDate(d);
-  setStatus('unsaved');
+
+  // If form has data, auto-save it first
+  const hasData = hasFormData();
+  if (hasData) {
+    setStatus('saving');
+    try {
+      await fetch(APPS_SCRIPT_URL, {
+        method: 'POST', mode: 'no-cors',
+        headers: {'Content-Type': 'text/plain'},
+        body: JSON.stringify(buildPayload())
+      });
+      setStatus('saved');
+    } catch(err) {}
+  }
+
+  // Now load data for the newly selected date
+  await loadDateData(dateVal);
+}
+
+async function loadDateData(dateVal) {
+  setStatus('loading');
+  try {
+    const url = APPS_SCRIPT_URL + '?outlet=' + encodeURIComponent(currentOutlet) + '&date=' + encodeURIComponent(dateVal);
+    const res  = await fetch(url);
+    const json = await res.json();
+
+    if (json.status === 'success' && json.data) {
+      populateForm(json.data);
+      const today = new Date().toISOString().split('T')[0];
+      const isPast = dateVal !== today;
+      setEditBanner(isPast, dateVal);
+      setStatus('saved');
+    } else {
+      resetForm();
+      setEditBanner(false);
+      setStatus('unsaved');
+    }
+  } catch(err) {
+    setStatus('unsaved');
+  }
+}
+
+function setEditBanner(show, dateVal) {
+  const banner = document.getElementById('edit-banner');
+  const text   = document.getElementById('edit-banner-text');
+  if (show) {
+    const d = new Date(dateVal + 'T00:00:00');
+    text.textContent = 'Loaded data for ' + d.toLocaleDateString('en-IN', {weekday:'long', day:'numeric', month:'long', year:'numeric'});
+    banner.classList.add('visible');
+  } else {
+    banner.classList.remove('visible');
+  }
+}
+
+function populateForm(data) {
+  resetForm();
+
+  // Simple fields
+  document.getElementById('ob').value          = data.openingBalance || '';
+  document.getElementById('cafe-sales').value  = data.cafeSales || '';
+  document.getElementById('cafe-desc').value   = data.cafeSalesDesc || '';
+  document.getElementById('online-sales').value= data.onlineSales || '';
+  document.getElementById('online-desc').value = data.onlineSalesDesc || '';
+  document.getElementById('card-upi').value    = data.cardUpi || '';
+  document.getElementById('cardupi-desc').value= data.cardUpiDesc || '';
+  document.getElementById('bank-dep').value    = data.bankDeposit || '';
+  document.getElementById('bank-desc').value   = data.bankDepositDesc || '';
+
+  // Line item lists
+  const secMap = {
+    duesIn: 'dues-in', owner: 'owner', advIn: 'adv-in', miscIn: 'misc-in',
+    raw: 'raw', sal: 'sal', petty: 'petty', duesOut: 'dues-out', advAdj: 'adv-adj'
+  };
+  Object.entries(secMap).forEach(([key, sec]) => {
+    if (data.entries && data.entries[key]) {
+      lists[sec] = data.entries[key].map(e => ({
+        id: Date.now() + Math.random(), desc: e.desc || '', amt: parseFloat(e.amt) || 0
+      }));
+      renderList(sec);
+    }
+  });
+
+  calc();
+}
+
+function hasFormData() {
+  const fields = ['ob','cafe-sales','online-sales','card-upi','bank-dep'];
+  if (fields.some(id => parseFloat(document.getElementById(id).value) > 0)) return true;
+  return Object.values(lists).some(arr => arr.length > 0);
 }
 
 function setLedgerDate(d) {
@@ -631,7 +731,8 @@ function setStatus(state, msg) {
   const el = document.getElementById('save-status');
   const btn = document.getElementById('btn-save');
   if (state === 'unsaved') { el.textContent = 'Unsaved changes'; el.className = 'save-status'; btn.disabled = false; }
-  if (state === 'saving')  { el.textContent = 'Saving...';       el.className = 'save-status saving'; btn.disabled = true; }
+  if (state === 'saving')  { el.textContent = 'Saving...'; el.className = 'save-status saving'; btn.disabled = true; }
+  if (state === 'loading') { el.textContent = 'Loading data...'; el.className = 'save-status loading'; btn.disabled = true; }
   if (state === 'saved')   { el.textContent = 'Saved to Google Sheets'; el.className = 'save-status saved'; btn.disabled = false; }
   if (state === 'error')   { el.textContent = msg || 'Save failed. Check connection.'; el.className = 'save-status error'; btn.disabled = false; }
 }
