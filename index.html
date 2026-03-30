@@ -495,6 +495,7 @@ function initCashbook() {
 // ══════════════════════════════════════════
 let autoSaveTimer = null;
 let lastSavedPayload = null;
+let isSwitchingDate = false;
 
 function startAutoSave() {
   if (autoSaveTimer) clearInterval(autoSaveTimer);
@@ -502,6 +503,7 @@ function startAutoSave() {
 }
 
 async function autoSave() {
+  if (isSwitchingDate) return;   // never fire mid-switch
   if (!hasFormData()) return;
   const payload = JSON.stringify(buildPayload());
   if (payload === lastSavedPayload) return; // nothing changed since last save
@@ -527,29 +529,40 @@ function silentSave() {
 
 async function onDateChange() {
   const newDate = document.getElementById('sel-date').value;
+
+  // ── STEP 1: Capture old date payload BEFORE date input changes anything ──
+  const oldPayload = hasFormData() ? JSON.stringify(buildPayload()) : null;
+
+  // ── STEP 2: Update date label ──
   const d = new Date(newDate + 'T00:00:00');
   setLedgerDate(d);
 
-  // Auto-save current form before switching date
-  if (hasFormData()) {
+  // ── STEP 3: Save old date's data if there was any ──
+  if (oldPayload) {
     setStatus('saving');
     try {
       await fetch(APPS_SCRIPT_URL, {
         method: 'POST', mode: 'no-cors',
         headers: {'Content-Type': 'text/plain'},
-        body: JSON.stringify(buildPayload())
+        body: oldPayload
       });
-      lastSavedPayload = JSON.stringify(buildPayload());
+      lastSavedPayload = null; // reset so new date starts fresh
     } catch(err) {}
   }
 
-  // Clear form fully before loading new date
+  // ── STEP 4: Lock auto-save during transition ──
+  isSwitchingDate = true;
+
+  // ── STEP 5: Clear form completely ──
   resetForm();
   setEditBanner(false);
   setStatus('loading');
 
-  // Load data for newly selected date
+  // ── STEP 6: Load new date's data ──
   await loadDateData(newDate);
+
+  // ── STEP 7: Unlock auto-save ──
+  isSwitchingDate = false;
 }
 
 async function loadDateData(dateVal) {
