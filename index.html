@@ -124,6 +124,7 @@ input.f-sub{padding:6px 9px;font-size:12px;font-weight:500;border:0.5px solid #d
 .save-status.saved{color:var(--green-mid)}
 .save-status.saving{color:var(--gold)}
 .save-status.error{color:var(--red-mid)}
+.save-status.empty{color:var(--ink3);font-style:italic}
 .save-status.loading{color:var(--gold)}
 .edit-banner{background:#1a4a2e;color:#fff;border-radius:var(--radius);padding:0.6rem 1.5rem;display:none;align-items:center;justify-content:space-between;margin-bottom:0.75rem;font-size:13px}
 .edit-banner.visible{display:flex}
@@ -483,16 +484,54 @@ function initCashbook() {
   setLedgerDate(today);
   setEditBanner(false);
   calc();
+  startAutoSave();
+  window.addEventListener('beforeunload', function() {
+    if (hasFormData()) silentSave();
+  });
+}
+
+// ══════════════════════════════════════════
+//  AUTO-SAVE
+// ══════════════════════════════════════════
+let autoSaveTimer = null;
+let lastSavedPayload = null;
+
+function startAutoSave() {
+  if (autoSaveTimer) clearInterval(autoSaveTimer);
+  autoSaveTimer = setInterval(autoSave, 2 * 60 * 1000); // every 2 minutes
+}
+
+async function autoSave() {
+  if (!hasFormData()) return;
+  const payload = JSON.stringify(buildPayload());
+  if (payload === lastSavedPayload) return; // nothing changed since last save
+  try {
+    setStatus('saving');
+    await fetch(APPS_SCRIPT_URL, {
+      method: 'POST', mode: 'no-cors',
+      headers: {'Content-Type': 'text/plain'},
+      body: payload
+    });
+    lastSavedPayload = payload;
+    setStatus('autosaved');
+  } catch(err) {
+    setStatus('unsaved');
+  }
+}
+
+function silentSave() {
+  if (!hasFormData()) return;
+  const payload = JSON.stringify(buildPayload());
+  navigator.sendBeacon(APPS_SCRIPT_URL, payload);
 }
 
 async function onDateChange() {
-  const dateVal = document.getElementById('sel-date').value;
-  const d = new Date(dateVal + 'T00:00:00');
+  const newDate = document.getElementById('sel-date').value;
+  const d = new Date(newDate + 'T00:00:00');
   setLedgerDate(d);
 
-  // If form has data, auto-save it first
-  const hasData = hasFormData();
-  if (hasData) {
+  // Auto-save current form before switching date
+  if (hasFormData()) {
     setStatus('saving');
     try {
       await fetch(APPS_SCRIPT_URL, {
@@ -500,43 +539,59 @@ async function onDateChange() {
         headers: {'Content-Type': 'text/plain'},
         body: JSON.stringify(buildPayload())
       });
-      setStatus('saved');
+      lastSavedPayload = JSON.stringify(buildPayload());
     } catch(err) {}
   }
 
-  // Now load data for the newly selected date
-  await loadDateData(dateVal);
+  // Clear form fully before loading new date
+  resetForm();
+  setEditBanner(false);
+  setStatus('loading');
+
+  // Load data for newly selected date
+  await loadDateData(newDate);
 }
 
 async function loadDateData(dateVal) {
-  setStatus('loading');
   try {
     const url = APPS_SCRIPT_URL + '?outlet=' + encodeURIComponent(currentOutlet) + '&date=' + encodeURIComponent(dateVal);
     const res  = await fetch(url);
     const json = await res.json();
+    const today = new Date().toISOString().split('T')[0];
 
     if (json.status === 'success' && json.data) {
       populateForm(json.data);
-      const today = new Date().toISOString().split('T')[0];
-      const isPast = dateVal !== today;
-      setEditBanner(isPast, dateVal);
+      lastSavedPayload = JSON.stringify(buildPayload());
+      setEditBanner(true, dateVal, dateVal === today);
       setStatus('saved');
     } else {
       resetForm();
       setEditBanner(false);
-      setStatus('unsaved');
+      setStatus(dateVal === today ? 'unsaved' : 'empty');
     }
   } catch(err) {
+    resetForm();
+    setEditBanner(false);
     setStatus('unsaved');
   }
 }
 
-function setEditBanner(show, dateVal) {
+function setEditBanner(show, dateVal, isToday) {
   const banner = document.getElementById('edit-banner');
+  const badge  = banner.querySelector('.edit-badge');
   const text   = document.getElementById('edit-banner-text');
   if (show) {
     const d = new Date(dateVal + 'T00:00:00');
-    text.textContent = 'Loaded data for ' + d.toLocaleDateString('en-IN', {weekday:'long', day:'numeric', month:'long', year:'numeric'});
+    const label = d.toLocaleDateString('en-IN', {weekday:'long', day:'numeric', month:'long', year:'numeric'});
+    if (isToday) {
+      text.textContent = 'Today\'s saved data loaded — ' + label;
+      badge.textContent = 'TODAY';
+      banner.style.background = '#1a4a2e';
+    } else {
+      text.textContent = 'Viewing saved data for ' + label;
+      badge.textContent = 'EDITING PAST DATE';
+      banner.style.background = '#633806';
+    }
     banner.classList.add('visible');
   } else {
     banner.classList.remove('visible');
@@ -730,11 +785,13 @@ function renderLedger(v) {
 function setStatus(state, msg) {
   const el = document.getElementById('save-status');
   const btn = document.getElementById('btn-save');
-  if (state === 'unsaved') { el.textContent = 'Unsaved changes'; el.className = 'save-status'; btn.disabled = false; }
-  if (state === 'saving')  { el.textContent = 'Saving...'; el.className = 'save-status saving'; btn.disabled = true; }
-  if (state === 'loading') { el.textContent = 'Loading data...'; el.className = 'save-status loading'; btn.disabled = true; }
-  if (state === 'saved')   { el.textContent = 'Saved to Google Sheets'; el.className = 'save-status saved'; btn.disabled = false; }
-  if (state === 'error')   { el.textContent = msg || 'Save failed. Check connection.'; el.className = 'save-status error'; btn.disabled = false; }
+  if (state === 'unsaved')   { el.textContent = 'Unsaved changes'; el.className = 'save-status'; btn.disabled = false; }
+  if (state === 'saving')    { el.textContent = 'Saving...'; el.className = 'save-status saving'; btn.disabled = true; }
+  if (state === 'loading')   { el.textContent = 'Loading data...'; el.className = 'save-status loading'; btn.disabled = true; }
+  if (state === 'saved')     { el.textContent = 'Saved to Google Sheets'; el.className = 'save-status saved'; btn.disabled = false; }
+  if (state === 'autosaved') { el.textContent = 'Auto-saved ✔'; el.className = 'save-status saved'; btn.disabled = false; }
+  if (state === 'error')     { el.textContent = msg || 'Save failed. Check connection.'; el.className = 'save-status error'; btn.disabled = false; }
+  if (state === 'empty')     { el.textContent = 'No saved data for this date — enter entries and save'; el.className = 'save-status empty'; btn.disabled = false; }
 }
 
 function buildPayload() {
