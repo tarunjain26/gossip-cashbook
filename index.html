@@ -673,13 +673,12 @@ async function saveToSheet() {
   setStatus('saving');
   try {
     const res = await fetch(APPS_SCRIPT_URL, {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify(buildPayload())
-    });
-    const data = await res.json();
-    if (data.status === 'success') {
-      setStatus('saved');
+  method: 'POST',
+  mode: 'no-cors',
+  headers: {'Content-Type': 'text/plain'},
+  body: JSON.stringify(buildPayload())
+});
+setStatus('saved');
     } else {
       setStatus('error', 'Save failed: ' + (data.message||'Unknown error'));
     }
