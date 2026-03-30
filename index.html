@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gossip! — Daily Cash Book</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;1,500&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --ink:#1a1a1a;--ink2:#444;--ink3:#888;
+  --cream:#FDF8F3;--cream2:#F5EDE0;--cream3:#EDE0CC;
+  --green-dark:#1a4a2e;--green-mid:#2d7a4f;--green-light:#e8f5ee;--green-text:#1a4a2e;
+  --red-dark:#4a1a1a;--red-mid:#c0392b;--red-light:#fdecea;--red-text:#7a1a1a;
+  --gold:#C9943A;--gold-light:#FDF3E3;
+  --radius:10px;--radius-lg:14px;
+}
+body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);min-height:100vh}
+
+/* ── SCREEN SYSTEM ── */
+.screen{display:none;min-height:100vh}
+.screen.active{display:block}
+
+/* ── OUTLET SELECT SCREEN ── */
+#screen-select{background:var(--ink);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2rem}
+.brand-hero{text-align:center;margin-bottom:3rem}
+.brand-hero h1{font-family:'Playfair Display',serif;font-size:48px;color:#F5E6D3;letter-spacing:-0.01em}
+.brand-hero p{font-size:13px;color:var(--ink3);letter-spacing:0.1em;text-transform:uppercase;margin-top:6px}
+.outlet-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;width:100%;max-width:640px;margin-bottom:2rem}
+.outlet-btn{background:#2a2a2a;border:0.5px solid #444;border-radius:var(--radius-lg);padding:1.5rem 1rem;text-align:center;cursor:pointer;transition:background 0.15s,border-color 0.15s}
+.outlet-btn:hover{background:#333;border-color:#666}
+.outlet-btn .ob-icon{width:40px;height:40px;border-radius:50%;background:#3a3a3a;margin:0 auto 10px;display:flex;align-items:center;justify-content:center;font-size:18px}
+.outlet-btn .ob-name{font-family:'Playfair Display',serif;font-size:16px;color:#F5E6D3}
+.outlet-btn .ob-sub{font-size:11px;color:var(--ink3);margin-top:3px}
+.owner-link{font-size:12px;color:var(--ink3);text-decoration:underline;cursor:pointer;margin-top:1rem}
+.owner-link:hover{color:#F5E6D3}
+
+/* ── PIN MODAL ── */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:100;align-items:center;justify-content:center}
+.modal-overlay.open{display:flex}
+.modal-box{background:#1a1a1a;border:0.5px solid #444;border-radius:var(--radius-lg);padding:2rem;width:320px;text-align:center}
+.modal-box h3{font-family:'Playfair Display',serif;color:#F5E6D3;font-size:20px;margin-bottom:6px}
+.modal-box p{font-size:12px;color:var(--ink3);margin-bottom:1.5rem}
+.pin-input{width:100%;padding:12px;font-size:20px;text-align:center;letter-spacing:0.3em;background:#2a2a2a;border:0.5px solid #555;border-radius:8px;color:#F5E6D3;font-family:'DM Sans',sans-serif;margin-bottom:1rem}
+.pin-error{font-size:12px;color:#f87171;margin-bottom:0.75rem;min-height:18px}
+.btn-primary{width:100%;padding:10px;background:var(--gold);color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:500;font-family:'DM Sans',sans-serif;cursor:pointer}
+.btn-primary:hover{opacity:0.9}
+.btn-cancel{background:transparent;border:none;font-size:12px;color:var(--ink3);cursor:pointer;margin-top:10px;font-family:'DM Sans',sans-serif;text-decoration:underline}
+
+/* ── CASHBOOK SCREEN ── */
+#screen-cashbook{background:var(--cream)}
+.cb-wrap{max-width:1000px;margin:0 auto;padding:1rem}
+
+/* top bar */
+.top-bar{background:var(--ink);border-radius:var(--radius-lg);padding:1rem 1.5rem;display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem}
+.top-left{display:flex;flex-direction:column}
+.top-brand{font-family:'Playfair Display',serif;font-size:20px;color:#F5E6D3}
+.top-outlet{font-size:11px;color:var(--ink3);letter-spacing:0.08em;text-transform:uppercase;margin-top:2px}
+.top-right{display:flex;align-items:center;gap:12px}
+.top-right label{font-size:12px;color:var(--ink3)}
+.top-right input[type=date]{background:#2a2a2a;border:0.5px solid #444;border-radius:8px;color:#F5E6D3;padding:6px 10px;font-size:13px;font-family:'DM Sans',sans-serif}
+.switch-btn{font-size:11px;padding:5px 12px;background:transparent;border:0.5px solid #555;border-radius:6px;color:var(--ink3);cursor:pointer;font-family:'DM Sans',sans-serif}
+.switch-btn:hover{border-color:#888;color:#F5E6D3}
+
+/* opening balance */
+.ob-bar{background:#fff;border:0.5px solid #e0d5c8;border-radius:var(--radius);padding:0.875rem 1.5rem;display:flex;align-items:center;gap:16px;margin-bottom:1rem}
+.ob-bar label{font-size:13px;color:var(--ink2);white-space:nowrap;font-weight:500}
+.ob-bar input{width:160px;padding:8px 12px;font-size:15px;font-weight:500;border:0.5px solid #d0c4b0;border-radius:8px;background:var(--cream);color:var(--ink);font-family:'DM Sans',sans-serif}
+.ob-bar .ob-cf{font-size:13px;color:var(--ink3);margin-left:auto}
+.ob-bar .ob-cf b{color:var(--ink);font-size:15px}
+
+/* two col */
+.two-col{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:1rem;margin-bottom:1rem}
+
+/* side cards */
+.side-card{background:#fff;border:0.5px solid #e0d5c8;border-radius:var(--radius-lg);overflow:hidden}
+.side-head{padding:10px 16px;display:flex;align-items:center;justify-content:space-between}
+.side-head.inc{background:var(--green-dark)}
+.side-head.exp{background:var(--red-dark)}
+.side-head h2{font-size:11px;font-weight:500;color:#fff;letter-spacing:0.08em;text-transform:uppercase}
+.side-total{font-size:17px;font-weight:500;color:#fff;font-family:'Playfair Display',serif}
+.side-body{padding:12px 14px}
+
+/* sections */
+.sec{margin-bottom:10px}
+.sec-label{font-size:12px;font-weight:500;color:var(--ink);margin-bottom:6px;display:flex;align-items:center;justify-content:space-between}
+.add-btn{font-size:10px;padding:2px 8px;border:0.5px solid #d0c4b0;border-radius:5px;background:transparent;color:var(--ink3);cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:400}
+.add-btn:hover{background:var(--cream2)}
+.divider{height:0.5px;background:#ede0cc;margin:8px 0}
+
+/* inputs */
+.simple-row{display:grid;grid-template-columns:1fr 110px;gap:6px}
+.entry-row{display:grid;grid-template-columns:1fr 100px 26px;gap:5px;margin-bottom:5px;align-items:center}
+input.f-desc{padding:7px 9px;font-size:12px;border:0.5px solid #d8cfc4;border-radius:7px;background:var(--cream);color:var(--ink);font-family:'DM Sans',sans-serif;width:100%}
+input.f-desc:focus{outline:none;border-color:#b0a090}
+input.f-amt{padding:7px 9px;font-size:12px;border:0.5px solid #d8cfc4;border-radius:7px;background:var(--cream);color:var(--ink);font-family:'DM Sans',sans-serif;width:100%;text-align:right}
+input.f-amt:focus{outline:none;border-color:#b0a090}
+input.f-sub{padding:6px 9px;font-size:12px;font-weight:500;border:0.5px solid #d8cfc4;border-radius:7px;background:var(--cream2);color:var(--ink2);width:100%;text-align:right;pointer-events:none}
+.del-btn{width:24px;height:24px;border-radius:50%;border:0.5px solid #d8cfc4;background:transparent;color:var(--ink3);cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.del-btn:hover{background:var(--red-light);color:var(--red-mid);border-color:#f09595}
+.subtotal-row{display:flex;justify-content:flex-end;align-items:center;gap:8px;margin-top:3px}
+.subtotal-row label{font-size:10px;color:var(--ink3)}
+.subtotal-row input{width:110px}
+
+/* balance card */
+.bal-card{background:var(--ink);border-radius:var(--radius-lg);padding:1.25rem 1.5rem;margin-bottom:1rem}
+.bal-title{font-size:10px;color:#666;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:12px}
+.bal-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-bottom:8px}
+.bi{background:#2a2a2a;border-radius:9px;padding:9px 11px}
+.bi .bl{font-size:9px;color:#777;margin-bottom:3px;text-transform:uppercase;letter-spacing:0.04em}
+.bi .bv{font-size:14px;font-weight:500}
+.bi.g .bv{color:#4ade80}
+.bi.r .bv{color:#f87171}
+.bi.n .bv{color:#F5E6D3}
+.bal-result{border-top:0.5px solid #333;padding-top:12px;display:flex;align-items:center;justify-content:space-between}
+.bal-rl{font-size:13px;color:#888;font-family:'Playfair Display',serif;font-style:italic}
+.bal-rv{font-size:30px;font-weight:500;font-family:'Playfair Display',serif}
+.c-pos{color:#4ade80}.c-neg{color:#f87171}
+
+/* save bar */
+.save-bar{background:#fff;border:0.5px solid #e0d5c8;border-radius:var(--radius);padding:0.875rem 1.5rem;display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem}
+.save-status{font-size:13px;color:var(--ink3)}
+.save-status.saved{color:var(--green-mid)}
+.save-status.saving{color:var(--gold)}
+.save-status.error{color:var(--red-mid)}
+.btn-save{padding:9px 24px;background:var(--green-dark);color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:500;font-family:'DM Sans',sans-serif;cursor:pointer}
+.btn-save:hover{background:#0f3020}
+.btn-save:disabled{opacity:0.5;cursor:not-allowed}
+
+/* ledger */
+.ledger-card{background:#fff;border:0.5px solid #e0d5c8;border-radius:var(--radius-lg);overflow:hidden;margin-bottom:1rem}
+.ledger-head{padding:10px 16px;display:flex;align-items:center;justify-content:space-between;border-bottom:0.5px solid #ede0cc}
+.ledger-head h3{font-size:11px;font-weight:500;color:var(--ink3);text-transform:uppercase;letter-spacing:0.06em}
+.ltable{width:100%;border-collapse:collapse;table-layout:fixed}
+.ltable th{font-size:10px;text-transform:uppercase;letter-spacing:0.05em;color:var(--ink3);font-weight:500;padding:7px 12px;border-bottom:0.5px solid #ede0cc;text-align:left}
+.ltable td{font-size:12px;padding:8px 12px;border-bottom:0.5px solid #f0e8de;vertical-align:middle}
+.ltable tr:last-child td{border-bottom:none}
+.ltable th:last-child,.ltable td:last-child{text-align:right}
+.pill{display:inline-block;font-size:9px;padding:2px 7px;border-radius:10px;font-weight:500}
+.pi{background:var(--green-light);color:var(--green-text)}
+.pe{background:var(--red-light);color:var(--red-text)}
+.ai{color:var(--green-mid);font-weight:500}
+.ae{color:var(--red-mid);font-weight:500}
+.empty-msg{text-align:center;padding:24px;color:var(--ink3);font-size:13px}
+
+/* responsive */
+@media(max-width:640px){
+  .two-col{grid-template-columns:1fr}
+  .outlet-grid{grid-template-columns:1fr}
+  .bal-grid{grid-template-columns:repeat(2,1fr)}
+  .brand-hero h1{font-size:36px}
+}
+</style>
+</head>
+<body>
+
+<!-- ══ SCREEN 1: OUTLET SELECT ══ -->
+<div id="screen-select" class="screen active">
+  <div class="brand-hero">
+    <h1>Gossip!</h1>
+    <p>Artisan Bakery &amp; Cafe</p>
+  </div>
+  <div class="outlet-grid">
+    <div class="outlet-btn" onclick="selectOutlet('Talwandi')">
+      <div class="ob-icon">T</div>
+      <div class="ob-name">Gossip! Talwandi</div>
+      <div class="ob-sub">Select outlet</div>
+    </div>
+    <div class="outlet-btn" onclick="selectOutlet('Aerodrome')">
+      <div class="ob-icon">A</div>
+      <div class="ob-name">Gossip! Aerodrome</div>
+      <div class="ob-sub">Select outlet</div>
+    </div>
+    <div class="outlet-btn" onclick="selectOutlet('RN1')">
+      <div class="ob-icon">R</div>
+      <div class="ob-name">Gossip! R N 1</div>
+      <div class="ob-sub">Select outlet</div>
+    </div>
+  </div>
+  <span class="owner-link" onclick="openPinModal()">Owner login</span>
+</div>
+
+<!-- PIN MODAL -->
+<div class="modal-overlay" id="pin-modal">
+  <div class="modal-box">
+    <h3>Owner Access</h3>
+    <p>Enter your master PIN to continue</p>
+    <input class="pin-input" type="password" id="pin-input" maxlength="6" placeholder="••••" onkeydown="if(event.key==='Enter')verifyPin()">
+    <div class="pin-error" id="pin-error"></div>
+    <button class="btn-primary" onclick="verifyPin()">Unlock</button><br>
+    <button class="btn-cancel" onclick="closePinModal()">Cancel</button>
+  </div>
+</div>
+
+<!-- ══ SCREEN 2: CASHBOOK ══ -->
+<div id="screen-cashbook" class="screen">
+  <div class="cb-wrap">
+
+    <div class="top-bar">
+      <div class="top-left">
+        <span class="top-brand">Gossip!</span>
+        <span class="top-outlet" id="outlet-label">—</span>
+      </div>
+      <div class="top-right">
+        <label>Date</label>
+        <input type="date" id="sel-date" onchange="onDateChange()">
+        <button class="switch-btn" onclick="goBack()">Switch outlet</button>
+      </div>
+    </div>
+
+    <div class="ob-bar">
+      <label>Opening Balance (₹)</label>
+      <input type="number" id="ob" placeholder="0" oninput="calc()">
+      <div class="ob-cf">Carried forward &nbsp;<b id="ob-disp">₹0</b></div>
+    </div>
+
+    <div class="two-col">
+
+      <!-- INCOME SIDE -->
+      <div class="side-card">
+        <div class="side-head inc">
+          <h2>Income side</h2>
+          <span class="side-total" id="inc-total">₹0</span>
+        </div>
+        <div class="side-body">
+
+          <div class="sec">
+            <div class="sec-label">Cafe Sales (Total — Cash + Card + UPI)</div>
+            <div class="simple-row">
+              <input class="f-desc" type="text" placeholder="Description (optional)" id="cafe-desc">
+              <input class="f-amt" type="number" placeholder="0" id="cafe-sales" oninput="calc()">
+            </div>
+          </div>
+          <div class="divider"></div>
+
+          <div class="sec">
+            <div class="sec-label">Online Sales (Swiggy / Zomato / Website)</div>
+            <div class="simple-row">
+              <input class="f-desc" type="text" placeholder="Description (optional)" id="online-desc">
+              <input class="f-amt" type="number" placeholder="0" id="online-sales" oninput="calc()">
+            </div>
+          </div>
+          <div class="divider"></div>
+
+          <div class="sec">
+            <div class="sec-label">Card / UPI Collected at Counter</div>
+            <div class="simple-row">
+              <input class="f-desc" type="text" placeholder="Description (optional)" id="cardupi-desc">
+              <input class="f-amt" type="number" placeholder="0" id="card-upi" oninput="calc()">
+            </div>
+          </div>
+          <div class="divider"></div>
+
+          <div class="sec">
+            <div class="sec-label">Old Dues Collected <button class="add-btn" onclick="addEntry('dues-in')">+ add</button></div>
+            <div id="dues-in-list"></div>
+            <div class="subtotal-row"><label>Subtotal</label><input class="f-sub" id="dues-in-st" readonly placeholder="0"></div>
+          </div>
+          <div class="divider"></div>
+
+          <div class="sec">
+            <div class="sec-label">Owner's Amount Introduced <button class="add-btn" onclick="addEntry('owner')">+ add</button></div>
+            <div id="owner-list"></div>
+            <div class="subtotal-row"><label>Subtotal</label><input class="f-sub" id="owner-st" readonly placeholder="0"></div>
+          </div>
+          <div class="divider"></div>
+
+          <div class="sec">
+            <div class="sec-label">Advance Received for Bookings <button class="add-btn" onclick="addEntry('adv-in')">+ add</button></div>
+            <div id="adv-in-list"></div>
+            <div class="subtotal-row"><label>Subtotal</label><input class="f-sub" id="adv-in-st" readonly placeholder="0"></div>
+          </div>
+          <div class="divider"></div>
+
+          <div class="sec">
+            <div class="sec-label">Misc Amount Received <button class="add-btn" onclick="addEntry('misc-in')">+ add</button></div>
+            <div id="misc-in-list"></div>
+            <div class="subtotal-row"><label>Subtotal</label><input class="f-sub" id="misc-in-st" readonly placeholder="0"></div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- EXPENSE SIDE -->
+      <div class="side-card">
+        <div class="side-head exp">
+          <h2>Expense side</h2>
+          <span class="side-total" id="exp-total">₹0</span>
+        </div>
+        <div class="side-body">
+
+          <div class="sec">
+            <div class="sec-label">Raw Materials / Ingredients <button class="add-btn" onclick="addEntry('raw')">+ add</button></div>
+            <div id="raw-list"></div>
+            <div class="subtotal-row"><label>Subtotal</label><input class="f-sub" id="raw-st" readonly placeholder="0"></div>
+          </div>
+          <div class="divider"></div>
+
+          <div class="sec">
+            <div class="sec-label">Staff Wages / Salaries Paid <button class="add-btn" onclick="addEntry('sal')">+ add</button></div>
+            <div id="sal-list"></div>
+            <div class="subtotal-row"><label>Subtotal</label><input class="f-sub" id="sal-st" readonly placeholder="0"></div>
+          </div>
+          <div class="divider"></div>
+
+          <div class="sec">
+            <div class="sec-label">Petty Cash / Misc Expenses <button class="add-btn" onclick="addEntry('petty')">+ add</button></div>
+            <div id="petty-list"></div>
+            <div class="subtotal-row"><label>Subtotal</label><input class="f-sub" id="petty-st" readonly placeholder="0"></div>
+          </div>
+          <div class="divider"></div>
+
+          <div class="sec">
+            <div class="sec-label">Credit Given to Customers (Dues) <button class="add-btn" onclick="addEntry('dues-out')">+ add</button></div>
+            <div id="dues-out-list"></div>
+            <div class="subtotal-row"><label>Subtotal</label><input class="f-sub" id="dues-out-st" readonly placeholder="0"></div>
+          </div>
+          <div class="divider"></div>
+
+          <div class="sec">
+            <div class="sec-label">Advance Adjusted (Booking Delivered) <button class="add-btn" onclick="addEntry('adv-adj')">+ add</button></div>
+            <div id="adv-adj-list"></div>
+            <div class="subtotal-row"><label>Subtotal</label><input class="f-sub" id="adv-adj-st" readonly placeholder="0"></div>
+          </div>
+          <div class="divider"></div>
+
+          <div class="sec">
+            <div class="sec-label">Cash Deposited in Bank</div>
+            <div class="simple-row">
+              <input class="f-desc" type="text" placeholder="Bank name / reference" id="bank-desc">
+              <input class="f-amt" type="number" placeholder="0" id="bank-dep" oninput="calc()">
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- BALANCE CARD -->
+    <div class="bal-card">
+      <div class="bal-title">Cash balance calculation</div>
+      <div class="bal-grid">
+        <div class="bi g"><div class="bl">Opening balance</div><div class="bv" id="b-ob">₹0</div></div>
+        <div class="bi g"><div class="bl">Cash sales (net)</div><div class="bv" id="b-cash">₹0</div></div>
+        <div class="bi g"><div class="bl">Dues collected</div><div class="bv" id="b-dues-in">₹0</div></div>
+        <div class="bi g"><div class="bl">Owner's amount</div><div class="bv" id="b-owner">₹0</div></div>
+      </div>
+      <div class="bal-grid">
+        <div class="bi g"><div class="bl">Advance received</div><div class="bv" id="b-advin">₹0</div></div>
+        <div class="bi g"><div class="bl">Misc received</div><div class="bv" id="b-miscin">₹0</div></div>
+        <div class="bi r"><div class="bl">Total expenses</div><div class="bv" id="b-exp">₹0</div></div>
+        <div class="bi r"><div class="bl">Credit given</div><div class="bv" id="b-duesout">₹0</div></div>
+      </div>
+      <div class="bal-grid" style="margin-bottom:12px">
+        <div class="bi r"><div class="bl">Advance adjusted</div><div class="bv" id="b-advadj">₹0</div></div>
+        <div class="bi r"><div class="bl">Bank deposit</div><div class="bv" id="b-bank">₹0</div></div>
+        <div class="bi n"><div class="bl">Online (non-cash)</div><div class="bv" id="b-online">₹0</div></div>
+        <div class="bi n"><div class="bl">Card / UPI (non-cash)</div><div class="bv" id="b-cardupi">₹0</div></div>
+      </div>
+      <div class="bal-result">
+        <span class="bal-rl">Closing cash in hand</span>
+        <span class="bal-rv c-pos" id="closing-bal">₹0</span>
+      </div>
+    </div>
+
+    <!-- SAVE BAR -->
+    <div class="save-bar">
+      <span class="save-status" id="save-status">Unsaved changes</span>
+      <button class="btn-save" id="btn-save" onclick="saveToSheet()">Save to Google Sheets</button>
+    </div>
+
+    <!-- LEDGER -->
+    <div class="ledger-card">
+      <div class="ledger-head">
+        <h3>Day ledger</h3>
+        <span style="font-size:12px;color:var(--ink3)" id="ledger-date"></span>
+      </div>
+      <table class="ltable">
+        <thead><tr>
+          <th style="width:38%">Description</th>
+          <th style="width:22%">Category</th>
+          <th style="width:16%">Type</th>
+          <th style="width:24%">Amount</th>
+        </tr></thead>
+        <tbody id="ledger-body">
+          <tr><td colspan="4" class="empty-msg">Enter figures above to see the day ledger</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════
+//  CONFIGURATION — update these values
+// ══════════════════════════════════════════
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxm4KBgo5AY5ZGf0PiC_0BpKuVmBJiQnJnlV_k25m9NmlLibKnBo88UQYFaYpeD2ASjCw/exec';
+const OWNER_PIN = '8427'; // Change this to your desired master PIN
+
+// ══════════════════════════════════════════
+//  STATE
+// ══════════════════════════════════════════
+let currentOutlet = null;
+let isOwner = false;
+
+const lists = {
+  raw:[], sal:[], petty:[],
+  'dues-in':[], 'dues-out':[],
+  'adv-in':[], 'adv-adj':[],
+  'misc-in':[], owner:[]
+};
+
+// ══════════════════════════════════════════
+//  SCREEN NAVIGATION
+// ══════════════════════════════════════════
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+function selectOutlet(outlet) {
+  currentOutlet = outlet;
+  document.getElementById('outlet-label').textContent =
+    outlet === 'Talwandi' ? 'Gossip! Talwandi' :
+    outlet === 'Aerodrome' ? 'Gossip! Aerodrome' : 'Gossip! R N 1';
+  initCashbook();
+  showScreen('screen-cashbook');
+}
+
+function goBack() {
+  if (confirm('Switch outlet? Unsaved changes will be lost.')) {
+    resetForm();
+    showScreen('screen-select');
+  }
+}
+
+// ══════════════════════════════════════════
+//  OWNER PIN
+// ══════════════════════════════════════════
+function openPinModal() {
+  document.getElementById('pin-input').value = '';
+  document.getElementById('pin-error').textContent = '';
+  document.getElementById('pin-modal').classList.add('open');
+  setTimeout(() => document.getElementById('pin-input').focus(), 100);
+}
+
+function closePinModal() {
+  document.getElementById('pin-modal').classList.remove('open');
+}
+
+function verifyPin() {
+  const entered = document.getElementById('pin-input').value;
+  if (entered === OWNER_PIN) {
+    isOwner = true;
+    closePinModal();
+    // Owner sees outlet picker with all 3 options — just log in as normal but can switch freely
+    alert('Owner access granted. Select any outlet to continue.');
+  } else {
+    document.getElementById('pin-error').textContent = 'Incorrect PIN. Try again.';
+    document.getElementById('pin-input').value = '';
+    document.getElementById('pin-input').focus();
+  }
+}
+
+// ══════════════════════════════════════════
+//  DATE
+// ══════════════════════════════════════════
+function initCashbook() {
+  const today = new Date();
+  document.getElementById('sel-date').value = today.toISOString().split('T')[0];
+  setLedgerDate(today);
+  calc();
+}
+
+function onDateChange() {
+  const d = new Date(document.getElementById('sel-date').value + 'T00:00:00');
+  setLedgerDate(d);
+  setStatus('unsaved');
+}
+
+function setLedgerDate(d) {
+  document.getElementById('ledger-date').textContent =
+    d.toLocaleDateString('en-IN', {weekday:'long', day:'numeric', month:'long', year:'numeric'});
+}
+
+// ══════════════════════════════════════════
+//  ENTRY LISTS
+// ══════════════════════════════════════════
+function addEntry(sec) {
+  lists[sec].push({id: Date.now(), desc:'', amt:0});
+  renderList(sec);
+  calc();
+}
+
+function delEntry(sec, id) {
+  lists[sec] = lists[sec].filter(e => e.id !== id);
+  renderList(sec);
+  calc();
+}
+
+function updateEntry(sec, id, field, val) {
+  const e = lists[sec].find(e => e.id === id);
+  if (e) e[field] = field === 'amt' ? parseFloat(val)||0 : val;
+  if (field === 'amt') calc();
+}
+
+function renderList(sec) {
+  const c = document.getElementById(sec + '-list');
+  c.innerHTML = '';
+  lists[sec].forEach(e => {
+    const row = document.createElement('div');
+    row.className = 'entry-row';
+    row.innerHTML = `
+      <input class="f-desc" type="text" placeholder="Description" value="${e.desc||''}"
+        oninput="updateEntry('${sec}',${e.id},'desc',this.value)">
+      <input class="f-amt" type="number" placeholder="0" value="${e.amt||''}"
+        oninput="updateEntry('${sec}',${e.id},'amt',this.value)">
+      <button class="del-btn" onclick="delEntry('${sec}',${e.id})">×</button>`;
+    c.appendChild(row);
+  });
+}
+
+function sumList(sec) {
+  return lists[sec].reduce((a,e) => a + (parseFloat(e.amt)||0), 0);
+}
+
+// ══════════════════════════════════════════
+//  CALC & RENDER
+// ══════════════════════════════════════════
+function fmt(n) { return '₹' + Math.round(n).toLocaleString('en-IN'); }
+
+function setST(id, val) {
+  const el = document.getElementById(id);
+  if (el) el.value = val > 0 ? Math.round(val) : '';
+}
+
+function calc() {
+  const ob        = parseFloat(document.getElementById('ob').value)||0;
+  const cafeSales = parseFloat(document.getElementById('cafe-sales').value)||0;
+  const online    = parseFloat(document.getElementById('online-sales').value)||0;
+  const cardUpi   = parseFloat(document.getElementById('card-upi').value)||0;
+  const bankDep   = parseFloat(document.getElementById('bank-dep').value)||0;
+
+  const duesIn  = sumList('dues-in');
+  const ownerAmt= sumList('owner');
+  const advIn   = sumList('adv-in');
+  const miscIn  = sumList('misc-in');
+  const raw     = sumList('raw');
+  const sal     = sumList('sal');
+  const petty   = sumList('petty');
+  const duesOut = sumList('dues-out');
+  const advAdj  = sumList('adv-adj');
+
+  setST('dues-in-st', duesIn);  setST('owner-st', ownerAmt);
+  setST('adv-in-st', advIn);    setST('misc-in-st', miscIn);
+  setST('raw-st', raw);         setST('sal-st', sal);
+  setST('petty-st', petty);     setST('dues-out-st', duesOut);
+  setST('adv-adj-st', advAdj);
+
+  const expTotal = raw + sal + petty;
+  document.getElementById('ob-disp').textContent = fmt(ob);
+  document.getElementById('inc-total').textContent = fmt(cafeSales + online + duesIn + ownerAmt + advIn + miscIn);
+  document.getElementById('exp-total').textContent = fmt(expTotal + duesOut + advAdj + bankDep);
+
+  const cashNet = cafeSales - online - cardUpi;
+  const closing = ob + cashNet + duesIn + ownerAmt + advIn + miscIn - expTotal - duesOut - advAdj - bankDep;
+
+  document.getElementById('b-ob').textContent     = fmt(ob);
+  document.getElementById('b-cash').textContent   = fmt(cashNet);
+  document.getElementById('b-dues-in').textContent= fmt(duesIn);
+  document.getElementById('b-owner').textContent  = fmt(ownerAmt);
+  document.getElementById('b-advin').textContent  = fmt(advIn);
+  document.getElementById('b-miscin').textContent = fmt(miscIn);
+  document.getElementById('b-exp').textContent    = fmt(expTotal);
+  document.getElementById('b-duesout').textContent= fmt(duesOut);
+  document.getElementById('b-advadj').textContent = fmt(advAdj);
+  document.getElementById('b-bank').textContent   = fmt(bankDep);
+  document.getElementById('b-online').textContent = fmt(online);
+  document.getElementById('b-cardupi').textContent= fmt(cardUpi);
+
+  const el = document.getElementById('closing-bal');
+  el.textContent = fmt(closing);
+  el.className = 'bal-rv ' + (closing >= 0 ? 'c-pos' : 'c-neg');
+
+  renderLedger({ob, cafeSales, online, cardUpi, duesIn, ownerAmt, advIn, miscIn, raw, sal, petty, duesOut, advAdj, bankDep, closing});
+  setStatus('unsaved');
+}
+
+function renderLedger(v) {
+  const rows = [];
+  const push = (desc, cat, type, amt) => { if(amt) rows.push({desc, cat, type, amt}); };
+
+  push('Opening balance', 'Balance b/f', 'inc', v.ob);
+  push(document.getElementById('cafe-desc').value||'Cafe sales', 'Sales', 'inc', v.cafeSales);
+  push(document.getElementById('online-desc').value||'Online sales', 'Online', 'exp', v.online);
+  push(document.getElementById('cardupi-desc').value||'Card / UPI', 'Non-cash', 'exp', v.cardUpi);
+  lists['dues-in'].forEach(e  => { if(e.amt) push(e.desc||'Due collected',    'Dues in',    'inc', e.amt); });
+  lists['owner'].forEach(e    => { if(e.amt) push(e.desc||"Owner's amount",   'Owner',      'inc', e.amt); });
+  lists['adv-in'].forEach(e   => { if(e.amt) push(e.desc||'Advance received', 'Advance in', 'inc', e.amt); });
+  lists['misc-in'].forEach(e  => { if(e.amt) push(e.desc||'Misc received',    'Misc in',    'inc', e.amt); });
+  lists['raw'].forEach(e      => { if(e.amt) push(e.desc||'Raw materials',    'Expense',    'exp', e.amt); });
+  lists['sal'].forEach(e      => { if(e.amt) push(e.desc||'Staff wages',      'Salary',     'exp', e.amt); });
+  lists['petty'].forEach(e    => { if(e.amt) push(e.desc||'Petty cash',       'Misc exp',   'exp', e.amt); });
+  lists['dues-out'].forEach(e => { if(e.amt) push(e.desc||'Credit given',     'Dues out',   'exp', e.amt); });
+  lists['adv-adj'].forEach(e  => { if(e.amt) push(e.desc||'Advance adjusted', 'Adv adj',    'exp', e.amt); });
+  push(document.getElementById('bank-desc').value||'Bank deposit', 'Bank', 'exp', v.bankDep);
+
+  const tbody = document.getElementById('ledger-body');
+  if (!rows.length) {
+    tbody.innerHTML = '<tr><td colspan="4" class="empty-msg">Enter figures above to see the day ledger</td></tr>';
+    return;
+  }
+  tbody.innerHTML = rows.map(r => `<tr>
+    <td>${r.desc}</td>
+    <td><span class="pill ${r.type==='inc'?'pi':'pe'}">${r.cat}</span></td>
+    <td style="font-size:11px;color:var(--ink3)">${r.type==='inc'?'Income':'Expense'}</td>
+    <td class="${r.type==='inc'?'ai':'ae'}">${r.type==='inc'?'+':'−'}${fmt(r.amt)}</td>
+  </tr>`).join('') +
+  `<tr style="background:var(--cream2)">
+    <td colspan="3" style="font-weight:500;padding:9px 12px;font-size:13px">Closing cash in hand</td>
+    <td style="font-weight:500;font-size:15px;text-align:right;padding:9px 12px;color:${v.closing>=0?'#1a7a4a':'#c0392b'}">${fmt(v.closing)}</td>
+  </tr>`;
+}
+
+// ══════════════════════════════════════════
+//  SAVE TO GOOGLE SHEETS
+// ══════════════════════════════════════════
+function setStatus(state, msg) {
+  const el = document.getElementById('save-status');
+  const btn = document.getElementById('btn-save');
+  if (state === 'unsaved') { el.textContent = 'Unsaved changes'; el.className = 'save-status'; btn.disabled = false; }
+  if (state === 'saving')  { el.textContent = 'Saving...';       el.className = 'save-status saving'; btn.disabled = true; }
+  if (state === 'saved')   { el.textContent = 'Saved to Google Sheets'; el.className = 'save-status saved'; btn.disabled = false; }
+  if (state === 'error')   { el.textContent = msg || 'Save failed. Check connection.'; el.className = 'save-status error'; btn.disabled = false; }
+}
+
+function buildPayload() {
+  const date = document.getElementById('sel-date').value;
+  return {
+    outlet: currentOutlet,
+    date,
+    openingBalance: parseFloat(document.getElementById('ob').value)||0,
+    cafeSales: parseFloat(document.getElementById('cafe-sales').value)||0,
+    cafeSalesDesc: document.getElementById('cafe-desc').value,
+    onlineSales: parseFloat(document.getElementById('online-sales').value)||0,
+    onlineSalesDesc: document.getElementById('online-desc').value,
+    cardUpi: parseFloat(document.getElementById('card-upi').value)||0,
+    cardUpiDesc: document.getElementById('cardupi-desc').value,
+    bankDeposit: parseFloat(document.getElementById('bank-dep').value)||0,
+    bankDepositDesc: document.getElementById('bank-desc').value,
+    closingBalance: parseFloat(document.getElementById('closing-bal').textContent.replace(/[₹,]/g,'')),
+    entries: {
+      duesIn:   lists['dues-in'],
+      owner:    lists['owner'],
+      advIn:    lists['adv-in'],
+      miscIn:   lists['misc-in'],
+      raw:      lists['raw'],
+      sal:      lists['sal'],
+      petty:    lists['petty'],
+      duesOut:  lists['dues-out'],
+      advAdj:   lists['adv-adj']
+    }
+  };
+}
+
+async function saveToSheet() {
+  if (APPS_SCRIPT_URL === 'YOUR_APPS_SCRIPT_WEB_APP_URL_HERE') {
+    alert('Google Sheets not connected yet.\n\nTo connect:\n1. Follow the Apps Script setup guide\n2. Paste your Web App URL in the APPS_SCRIPT_URL variable in this file.');
+    return;
+  }
+  setStatus('saving');
+  try {
+    const res = await fetch(APPS_SCRIPT_URL, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(buildPayload())
+    });
+    const data = await res.json();
+    if (data.status === 'success') {
+      setStatus('saved');
+    } else {
+      setStatus('error', 'Save failed: ' + (data.message||'Unknown error'));
+    }
+  } catch(err) {
+    setStatus('error', 'Network error. Check connection.');
+  }
+}
+
+// ══════════════════════════════════════════
+//  RESET
+// ══════════════════════════════════════════
+function resetForm() {
+  Object.keys(lists).forEach(k => { lists[k] = []; renderList(k); });
+  ['ob','cafe-sales','online-sales','card-upi','bank-dep'].forEach(id => {
+    const el = document.getElementById(id); if(el) el.value = '';
+  });
+  ['cafe-desc','online-desc','cardupi-desc','bank-desc'].forEach(id => {
+    const el = document.getElementById(id); if(el) el.value = '';
+  });
+  calc();
+}
+</script>
+</body>
+</html>
