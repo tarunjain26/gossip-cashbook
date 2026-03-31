@@ -1132,30 +1132,57 @@ function renderDaySummary(results) {
 
 // ── MONTHLY REPORT ──────────────────────
 async function loadMonthly() {
-  const month  = parseInt(document.getElementById('dash-month').value);
-  const year   = parseInt(document.getElementById('dash-year').value);
+  const month = parseInt(document.getElementById('dash-month').value);
+  const year  = parseInt(document.getElementById('dash-year').value);
   document.getElementById('monthly-status').textContent = 'Loading...';
-  document.getElementById('monthly-tbody').innerHTML = '<tr><td colspan="6" class="dash-loading">Fetching data from Sheets...</td></tr>';
+  document.getElementById('monthly-tbody').innerHTML = '<tr><td colspan="6" class="dash-loading">Fetching data...</td></tr>';
+  document.getElementById('m-inc').textContent = '—';
+  document.getElementById('m-exp').textContent = '—';
+  document.getElementById('m-profit').textContent = '—';
+  document.getElementById('m-days').textContent = '—';
 
-  // Fetch all days in month for all outlets
-  const daysInMonth = new Date(year, month, 0).getDate();
-  const allRows = [];
+  try {
+    // Single API call — fetches all outlets + all days in one shot
+    const url  = APPS_SCRIPT_URL + '?action=monthly&month=' + month + '&year=' + year;
+    const res  = await fetch(url);
+    const json = await res.json();
 
-  for (const outlet of OUTLET_KEYS) {
-    for (let day = 1; day <= daysInMonth; day++) {
-      const date = year + '-' + String(month).padStart(2,'0') + '-' + String(day).padStart(2,'0');
-      try {
-        const res  = await fetch(APPS_SCRIPT_URL + '?outlet=' + encodeURIComponent(outlet) + '&date=' + encodeURIComponent(date));
-        const json = await res.json();
-        if (json.status === 'success' && json.data) {
-          allRows.push({ outlet, date, data: json.data });
-        }
-      } catch(e) {}
+    if (json.status !== 'success') {
+      document.getElementById('monthly-status').textContent = 'Error loading data';
+      return;
     }
-  }
 
-  renderMonthlyReport(allRows, month, year);
-  document.getElementById('monthly-status').textContent = allRows.length + ' entries loaded';
+    // Convert flat summary rows to the format renderMonthlyReport expects
+    const allRows = json.rows.map(r => ({
+      outlet: r.outlet,
+      date:   r.date,
+      data: {
+        cafeSales:       r.cafeSales,
+        onlineSales:     r.onlineSales,
+        cardUpi:         r.cardUpi,
+        openingBalance:  r.openingBalance,
+        closingBalance:  r.closingBalance,
+        bankDeposit:     r.bankDeposit,
+        entries: {
+          duesIn:  [{amt: r.duesCollected}],
+          owner:   [{amt: r.ownerAmount}],
+          advIn:   [{amt: r.advanceReceived}],
+          miscIn:  [{amt: r.miscReceived}],
+          raw:     [{amt: r.rawMaterials}],
+          sal:     [{amt: r.staffWages}],
+          petty:   [{amt: r.pettyCash}],
+          duesOut: [{amt: r.creditGiven}],
+          advAdj:  [{amt: r.advanceAdjusted}]
+        }
+      }
+    }));
+
+    renderMonthlyReport(allRows, month, year);
+    document.getElementById('monthly-status').textContent = allRows.length + ' entries loaded';
+
+  } catch(err) {
+    document.getElementById('monthly-status').textContent = 'Network error — try again';
+  }
 }
 
 function renderMonthlyReport(rows, month, year) {
