@@ -149,6 +149,75 @@ input.f-sub{padding:6px 9px;font-size:12px;font-weight:500;border:0.5px solid #d
 .ae{color:var(--red-mid);font-weight:500}
 .empty-msg{text-align:center;padding:24px;color:var(--ink3);font-size:13px}
 
+/* ── DASHBOARD SCREEN ── */
+#screen-dashboard{background:var(--cream)}
+.dash-wrap{max-width:1000px;margin:0 auto;padding:1rem}
+.dash-topbar{background:var(--ink);border-radius:var(--radius-lg);padding:1rem 1.5rem;display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem}
+.dash-brand{font-family:'Playfair Display',serif;font-size:20px;color:#F5E6D3}
+.dash-sub{font-size:11px;color:var(--ink3);letter-spacing:0.06em;text-transform:uppercase;margin-top:2px}
+.dash-tabs{display:flex;gap:8px;align-items:center}
+.dash-tab{font-size:12px;padding:6px 14px;border-radius:6px;border:0.5px solid #555;color:var(--ink3);cursor:pointer;font-family:'DM Sans',sans-serif;background:transparent;transition:all 0.15s}
+.dash-tab:hover{border-color:#888;color:#F5E6D3}
+.dash-tab.active{background:var(--gold);border-color:var(--gold);color:#fff}
+.dash-back{font-size:11px;padding:5px 12px;background:transparent;border:0.5px solid #555;border-radius:6px;color:var(--ink3);cursor:pointer;font-family:'DM Sans',sans-serif}
+.dash-back:hover{border-color:#888;color:#F5E6D3}
+.dash-section{display:none}.dash-section.active{display:block}
+.dash-date-bar{background:#fff;border:0.5px solid #e0d5c8;border-radius:var(--radius);padding:0.75rem 1.5rem;display:flex;align-items:center;gap:16px;margin-bottom:1rem;flex-wrap:wrap}
+.dash-date-bar label{font-size:12px;color:var(--ink2);font-weight:500}
+.dash-date-bar input,.dash-date-bar select{padding:6px 10px;font-size:13px;border:0.5px solid #d0c4b0;border-radius:7px;background:var(--cream);color:var(--ink);font-family:'DM Sans',sans-serif}
+.btn-refresh{padding:6px 16px;background:var(--green-dark);color:#fff;border:none;border-radius:7px;font-size:12px;font-weight:500;font-family:'DM Sans',sans-serif;cursor:pointer}
+.btn-refresh:hover{background:#0f3020}
+.dash-loading{text-align:center;padding:40px;font-size:13px;color:var(--ink3)}
+
+/* today cards */
+.outlet-cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1rem;margin-bottom:1rem}
+.outlet-card{background:#fff;border:0.5px solid #e0d5c8;border-radius:var(--radius-lg);overflow:hidden}
+.oc-head{padding:10px 14px;display:flex;align-items:center;justify-content:space-between}
+.oc-head.t{background:#1a4a2e}.oc-head.a{background:#0c447c}.oc-head.r{background:#633806}
+.oc-name{font-size:11px;font-weight:500;color:#fff;letter-spacing:0.06em;text-transform:uppercase}
+.oc-status{font-size:10px;padding:2px 8px;border-radius:10px;font-weight:500}
+.oc-status.ok{background:rgba(255,255,255,0.2);color:#fff}
+.oc-status.missing{background:#f87171;color:#fff}
+.oc-body{padding:12px 14px}
+.oc-metric{margin-bottom:8px}
+.oc-metric .lbl{font-size:10px;color:var(--ink3);text-transform:uppercase;letter-spacing:0.04em;margin-bottom:2px}
+.oc-metric .val{font-size:18px;font-weight:500;font-family:'Playfair Display',serif}
+.oc-metric .val.pos{color:var(--green-mid)}.oc-metric .val.neg{color:var(--red-mid)}
+.oc-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.oc-mini .lbl{font-size:10px;color:var(--ink3);margin-bottom:1px}
+.oc-mini .val{font-size:13px;font-weight:500}
+.oc-mini .val.inc{color:var(--green-mid)}.oc-mini .val.exp{color:var(--red-mid)}
+
+/* summary totals */
+.summary-row{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:1rem}
+.sum-box{background:#fff;border:0.5px solid #e0d5c8;border-radius:var(--radius);padding:12px 14px}
+.sum-box .lbl{font-size:10px;color:var(--ink3);text-transform:uppercase;letter-spacing:0.04em;margin-bottom:4px}
+.sum-box .val{font-size:20px;font-weight:500;font-family:'Playfair Display',serif}
+.sum-box.inc .val{color:var(--green-mid)}.sum-box.exp .val{color:var(--red-mid)}
+.sum-box.profit .val{color:var(--ink)}.sum-box.days .val{color:var(--gold)}
+
+/* monthly table */
+.month-table-wrap{background:#fff;border:0.5px solid #e0d5c8;border-radius:var(--radius-lg);overflow:hidden;margin-bottom:1rem}
+.month-table-head{padding:10px 16px;border-bottom:0.5px solid #ede0cc;display:flex;align-items:center;justify-content:space-between}
+.month-table-head h3{font-size:12px;font-weight:500;color:var(--ink3);text-transform:uppercase;letter-spacing:0.06em}
+.mtable{width:100%;border-collapse:collapse;table-layout:fixed}
+.mtable th{font-size:10px;text-transform:uppercase;letter-spacing:0.05em;color:var(--ink3);font-weight:500;padding:7px 12px;border-bottom:0.5px solid #ede0cc;text-align:left}
+.mtable td{font-size:12px;padding:8px 12px;border-bottom:0.5px solid #f0e8de;vertical-align:middle}
+.mtable tr:last-child td{border-bottom:none}
+.mtable th:last-child,.mtable td:last-child{text-align:right}
+.mtable tr:nth-child(even) td{background:var(--cream)}
+.profit-pos{color:var(--green-mid);font-weight:500}.profit-neg{color:var(--red-mid);font-weight:500}
+
+/* category breakdown */
+.cat-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem}
+.cat-card{background:#fff;border:0.5px solid #e0d5c8;border-radius:var(--radius-lg);padding:14px}
+.cat-card h4{font-size:11px;font-weight:500;color:var(--ink3);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:12px}
+.cat-bar-row{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.cat-bar-label{font-size:11px;color:var(--ink2);width:130px;flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cat-bar-track{flex:1;background:var(--cream2);border-radius:4px;height:8px;overflow:hidden}
+.cat-bar-fill{height:8px;border-radius:4px;transition:width 0.4s}
+.cat-bar-val{font-size:11px;color:var(--ink2);width:70px;text-align:right;flex-shrink:0}
+
 /* responsive */
 @media(max-width:640px){
   .two-col{grid-template-columns:1fr}
@@ -403,6 +472,89 @@ input.f-sub{padding:6px 9px;font-size:12px;font-weight:500;border:0.5px solid #d
   </div>
 </div>
 
+<!-- ══ SCREEN 3: OWNER DASHBOARD ══ -->
+<div id="screen-dashboard" class="screen">
+  <div class="dash-wrap">
+    <div class="dash-topbar">
+      <div>
+        <div class="dash-brand">Gossip!</div>
+        <div class="dash-sub">Owner Dashboard</div>
+      </div>
+      <div class="dash-tabs">
+        <button class="dash-tab active" onclick="showDashTab('today')">Today</button>
+        <button class="dash-tab" onclick="showDashTab('monthly')">Monthly</button>
+        <button class="dash-back" onclick="showScreen('screen-select')">← Back</button>
+      </div>
+    </div>
+
+    <!-- TODAY TAB -->
+    <div class="dash-section active" id="dash-today">
+      <div class="dash-date-bar">
+        <label>Date</label>
+        <input type="date" id="dash-date" onchange="loadDashboard()">
+        <button class="btn-refresh" onclick="loadDashboard()">Refresh</button>
+        <span id="dash-status" style="font-size:12px;color:var(--ink3);margin-left:auto"></span>
+      </div>
+      <div class="outlet-cards" id="outlet-cards">
+        <div class="dash-loading" style="grid-column:1/-1">Loading outlet data...</div>
+      </div>
+      <div class="summary-row" id="dash-summary">
+        <div class="sum-box inc"><div class="lbl">Total Income</div><div class="val" id="d-total-inc">—</div></div>
+        <div class="sum-box exp"><div class="lbl">Total Expense</div><div class="val" id="d-total-exp">—</div></div>
+        <div class="sum-box profit"><div class="lbl">Net Cash (all outlets)</div><div class="val" id="d-total-bal">—</div></div>
+        <div class="sum-box days"><div class="lbl">Outlets Reported</div><div class="val" id="d-reported">—</div></div>
+      </div>
+    </div>
+
+    <!-- MONTHLY TAB -->
+    <div class="dash-section" id="dash-monthly">
+      <div class="dash-date-bar">
+        <label>Month</label>
+        <select id="dash-month"></select>
+        <label>Year</label>
+        <select id="dash-year"></select>
+        <button class="btn-refresh" onclick="loadMonthly()">Load Report</button>
+        <span id="monthly-status" style="font-size:12px;color:var(--ink3);margin-left:auto"></span>
+      </div>
+      <div class="summary-row" id="monthly-summary">
+        <div class="sum-box inc"><div class="lbl">Month Income</div><div class="val" id="m-inc">—</div></div>
+        <div class="sum-box exp"><div class="lbl">Month Expense</div><div class="val" id="m-exp">—</div></div>
+        <div class="sum-box profit"><div class="lbl">Net Profit</div><div class="val" id="m-profit">—</div></div>
+        <div class="sum-box days"><div class="lbl">Days Recorded</div><div class="val" id="m-days">—</div></div>
+      </div>
+      <div class="cat-grid">
+        <div class="cat-card">
+          <h4>Income breakdown</h4>
+          <div id="cat-income-bars"></div>
+        </div>
+        <div class="cat-card">
+          <h4>Expense breakdown</h4>
+          <div id="cat-expense-bars"></div>
+        </div>
+      </div>
+      <div class="month-table-wrap">
+        <div class="month-table-head">
+          <h3>Day-by-day summary</h3>
+          <span id="monthly-outlet-label" style="font-size:11px;color:var(--ink3)">All outlets combined</span>
+        </div>
+        <table class="mtable">
+          <thead><tr>
+            <th style="width:18%">Date</th>
+            <th style="width:16%">Outlet</th>
+            <th style="width:18%">Income</th>
+            <th style="width:18%">Expense</th>
+            <th style="width:15%">Profit</th>
+            <th style="width:15%">Closing</th>
+          </tr></thead>
+          <tbody id="monthly-tbody">
+            <tr><td colspan="6" class="dash-loading">Select a month and click Load Report</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script>
 // ══════════════════════════════════════════
 //  CONFIGURATION — update these values
@@ -466,8 +618,8 @@ function verifyPin() {
   if (entered === OWNER_PIN) {
     isOwner = true;
     closePinModal();
-    // Owner sees outlet picker with all 3 options — just log in as normal but can switch freely
-    alert('Owner access granted. Select any outlet to continue.');
+    initDashboard();
+    showScreen('screen-dashboard');
   } else {
     document.getElementById('pin-error').textContent = 'Incorrect PIN. Try again.';
     document.getElementById('pin-input').value = '';
@@ -881,6 +1033,216 @@ function resetForm() {
   });
   calc();
 }
+
+// ══════════════════════════════════════════
+//  OWNER DASHBOARD
+// ══════════════════════════════════════════
+const OUTLET_KEYS  = ['Talwandi','Aerodrome','RN1'];
+const OUTLET_NAMES = {Talwandi:'Gossip! Talwandi', Aerodrome:'Gossip! Aerodrome', RN1:'Gossip! R N 1'};
+const OUTLET_HEAD  = {Talwandi:'t', Aerodrome:'a', RN1:'r'};
+const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+
+function initDashboard() {
+  // Set today's date
+  const today = new Date().toISOString().split('T')[0];
+  document.getElementById('dash-date').value = today;
+
+  // Populate month/year selectors
+  const now = new Date();
+  const mSel = document.getElementById('dash-month');
+  const ySel = document.getElementById('dash-year');
+  mSel.innerHTML = MONTHS.map((m,i) => `<option value="${i+1}" ${i===now.getMonth()?'selected':''}>${m}</option>`).join('');
+  ySel.innerHTML = [now.getFullYear()-1, now.getFullYear()].map(y => `<option value="${y}" ${y===now.getFullYear()?'selected':''}>${y}</option>`).join('');
+
+  loadDashboard();
+}
+
+function showDashTab(tab) {
+  document.querySelectorAll('.dash-tab').forEach((t,i) => t.classList.toggle('active', ['today','monthly'][i]===tab));
+  document.querySelectorAll('.dash-section').forEach(s => s.classList.remove('active'));
+  document.getElementById('dash-'+tab).classList.add('active');
+}
+
+// ── TODAY DASHBOARD ──────────────────────
+async function loadDashboard() {
+  const date = document.getElementById('dash-date').value;
+  document.getElementById('dash-status').textContent = 'Loading...';
+  document.getElementById('outlet-cards').innerHTML = '<div class="dash-loading" style="grid-column:1/-1">Fetching outlet data...</div>';
+
+  const results = await Promise.all(OUTLET_KEYS.map(outlet =>
+    fetch(APPS_SCRIPT_URL + '?outlet=' + encodeURIComponent(outlet) + '&date=' + encodeURIComponent(date))
+      .then(r => r.json())
+      .then(j => ({ outlet, data: j.status === 'success' ? j.data : null }))
+      .catch(() => ({ outlet, data: null }))
+  ));
+
+  renderOutletCards(results, date);
+  renderDaySummary(results);
+  document.getElementById('dash-status').textContent = 'Updated ' + new Date().toLocaleTimeString('en-IN', {hour:'2-digit',minute:'2-digit'});
+}
+
+function renderOutletCards(results, date) {
+  const today = new Date().toISOString().split('T')[0];
+  const container = document.getElementById('outlet-cards');
+  container.innerHTML = results.map(({outlet, data}) => {
+    const hasData  = !!data;
+    const income   = hasData ? (data.cafeSales||0)+(data.onlineSales||0) : 0;
+    const closing  = hasData ? (data.closingBalance||0) : 0;
+    const ob       = hasData ? (data.openingBalance||0) : 0;
+    const expense  = hasData ? Math.max(0, ob + income - closing) : 0;
+    const isMissing = !hasData && date === today;
+    return `<div class="outlet-card">
+      <div class="oc-head ${OUTLET_HEAD[outlet]}">
+        <span class="oc-name">${OUTLET_NAMES[outlet]}</span>
+        <span class="oc-status ${isMissing?'missing':'ok'}">${isMissing?'NOT SAVED':hasData?'SAVED':'NO DATA'}</span>
+      </div>
+      <div class="oc-body">
+        <div class="oc-metric">
+          <div class="lbl">Closing cash</div>
+          <div class="val ${closing>=0?'pos':'neg'}">${hasData?fmtD(closing):'—'}</div>
+        </div>
+        <div class="oc-row">
+          <div class="oc-mini"><div class="lbl">Income</div><div class="val inc">${hasData?fmtD(income):'—'}</div></div>
+          <div class="oc-mini"><div class="lbl">Expense</div><div class="val exp">${hasData?fmtD(expense):'—'}</div></div>
+        </div>
+        ${hasData?`<div style="margin-top:8px;font-size:10px;color:var(--ink3)">Opening: ${fmtD(ob)}</div>`:'<div style="margin-top:8px;font-size:11px;color:var(--ink3);font-style:italic">No entry saved for this date</div>'}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderDaySummary(results) {
+  let totalInc=0, totalExp=0, totalBal=0, reported=0;
+  results.forEach(({data}) => {
+    if (!data) return;
+    reported++;
+    const income  = (data.cafeSales||0)+(data.onlineSales||0);
+    const closing = data.closingBalance||0;
+    const ob      = data.openingBalance||0;
+    const expense = Math.max(0, ob + income - closing);
+    totalInc += income; totalExp += expense; totalBal += closing;
+  });
+  document.getElementById('d-total-inc').textContent = fmtD(totalInc);
+  document.getElementById('d-total-exp').textContent = fmtD(totalExp);
+  const balEl = document.getElementById('d-total-bal');
+  balEl.textContent = fmtD(totalBal);
+  balEl.style.color = totalBal >= 0 ? 'var(--green-mid)' : 'var(--red-mid)';
+  document.getElementById('d-reported').textContent = reported + ' / 3';
+}
+
+// ── MONTHLY REPORT ──────────────────────
+async function loadMonthly() {
+  const month  = parseInt(document.getElementById('dash-month').value);
+  const year   = parseInt(document.getElementById('dash-year').value);
+  document.getElementById('monthly-status').textContent = 'Loading...';
+  document.getElementById('monthly-tbody').innerHTML = '<tr><td colspan="6" class="dash-loading">Fetching data from Sheets...</td></tr>';
+
+  // Fetch all days in month for all outlets
+  const daysInMonth = new Date(year, month, 0).getDate();
+  const allRows = [];
+
+  for (const outlet of OUTLET_KEYS) {
+    for (let day = 1; day <= daysInMonth; day++) {
+      const date = year + '-' + String(month).padStart(2,'0') + '-' + String(day).padStart(2,'0');
+      try {
+        const res  = await fetch(APPS_SCRIPT_URL + '?outlet=' + encodeURIComponent(outlet) + '&date=' + encodeURIComponent(date));
+        const json = await res.json();
+        if (json.status === 'success' && json.data) {
+          allRows.push({ outlet, date, data: json.data });
+        }
+      } catch(e) {}
+    }
+  }
+
+  renderMonthlyReport(allRows, month, year);
+  document.getElementById('monthly-status').textContent = allRows.length + ' entries loaded';
+}
+
+function renderMonthlyReport(rows, month, year) {
+  // Totals
+  let totalInc=0, totalExp=0;
+  rows.forEach(({data}) => {
+    const income  = (data.cafeSales||0)+(data.onlineSales||0);
+    const closing = data.closingBalance||0;
+    const ob      = data.openingBalance||0;
+    const expense = Math.max(0, ob + income - closing);
+    totalInc += income; totalExp += expense;
+  });
+  const profit = totalInc - totalExp;
+  document.getElementById('m-inc').textContent    = fmtD(totalInc);
+  document.getElementById('m-exp').textContent    = fmtD(totalExp);
+  const profEl = document.getElementById('m-profit');
+  profEl.textContent = fmtD(profit);
+  profEl.style.color = profit >= 0 ? 'var(--green-mid)' : 'var(--red-mid)';
+  document.getElementById('m-days').textContent   = rows.length;
+
+  // Category breakdown
+  const catInc  = {}, catExp = {};
+  rows.forEach(({data}) => {
+    if (!data.entries) return;
+    add(catInc, 'Cafe Sales',      data.cafeSales||0);
+    add(catInc, 'Online Sales',    data.onlineSales||0);
+    add(catInc, 'Card / UPI',      data.cardUpi||0);
+    add(catInc, 'Dues Collected',  sumE(data.entries.duesIn));
+    add(catInc, "Owner's Amount",  sumE(data.entries.owner));
+    add(catInc, 'Advance Recvd',   sumE(data.entries.advIn));
+    add(catInc, 'Misc Received',   sumE(data.entries.miscIn));
+    add(catExp, 'Raw Materials',   sumE(data.entries.raw));
+    add(catExp, 'Staff Wages',     sumE(data.entries.sal));
+    add(catExp, 'Petty Cash',      sumE(data.entries.petty));
+    add(catExp, 'Credit Given',    sumE(data.entries.duesOut));
+    add(catExp, 'Adv Adjusted',    sumE(data.entries.advAdj));
+    add(catExp, 'Bank Deposit',    data.bankDeposit||0);
+  });
+  renderCatBars('cat-income-bars',  catInc,  'var(--green-mid)');
+  renderCatBars('cat-expense-bars', catExp,  'var(--red-mid)');
+
+  // Day-by-day table
+  const tbody = document.getElementById('monthly-tbody');
+  if (!rows.length) {
+    tbody.innerHTML = '<tr><td colspan="6" class="dash-loading">No data found for this month</td></tr>';
+    return;
+  }
+  rows.sort((a,b) => a.date.localeCompare(b.date) || a.outlet.localeCompare(b.outlet));
+  tbody.innerHTML = rows.map(({outlet, date, data}) => {
+    const income  = (data.cafeSales||0)+(data.onlineSales||0);
+    const closing = data.closingBalance||0;
+    const ob      = data.openingBalance||0;
+    const expense = Math.max(0, ob + income - closing);
+    const profit  = income - expense;
+    const d = new Date(date+'T00:00:00');
+    const dateStr = d.toLocaleDateString('en-IN',{day:'numeric',month:'short'});
+    const colors  = {Talwandi:'#e8f5ee',Aerodrome:'#e6f1fb',RN1:'#faeeda'};
+    const tcols   = {Talwandi:'#1a4a2e',Aerodrome:'#0c447c',RN1:'#633806'};
+    return `<tr>
+      <td style="font-weight:500">${dateStr}</td>
+      <td><span style="background:${colors[outlet]};color:${tcols[outlet]};font-size:10px;padding:2px 7px;border-radius:8px;font-weight:500">${outlet}</span></td>
+      <td style="color:var(--green-mid);font-weight:500">${fmtD(income)}</td>
+      <td style="color:var(--red-mid)">${fmtD(expense)}</td>
+      <td class="${profit>=0?'profit-pos':'profit-neg'}">${fmtD(profit)}</td>
+      <td style="font-weight:500;text-align:right">${fmtD(closing)}</td>
+    </tr>`;
+  }).join('');
+}
+
+function renderCatBars(elId, catData, color) {
+  const el  = document.getElementById(elId);
+  const max = Math.max(...Object.values(catData), 1);
+  const sorted = Object.entries(catData).filter(([,v])=>v>0).sort((a,b)=>b[1]-a[1]);
+  if (!sorted.length) { el.innerHTML = '<div style="font-size:12px;color:var(--ink3);padding:8px 0">No data</div>'; return; }
+  el.innerHTML = sorted.map(([cat,val]) => `
+    <div class="cat-bar-row">
+      <span class="cat-bar-label">${cat}</span>
+      <div class="cat-bar-track"><div class="cat-bar-fill" style="width:${Math.round(val/max*100)}%;background:${color}"></div></div>
+      <span class="cat-bar-val">${fmtD(val)}</span>
+    </div>`).join('');
+}
+
+// ── HELPERS ──────────────────────────────
+function fmtD(n) { return '₹' + Math.round(n).toLocaleString('en-IN'); }
+function sumE(arr) { return arr ? arr.reduce((a,e)=>a+(parseFloat(e.amt)||0),0) : 0; }
+function add(obj, key, val) { obj[key] = (obj[key]||0) + val; }
+
 </script>
 </body>
 </html>
