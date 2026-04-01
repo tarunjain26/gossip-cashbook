@@ -559,7 +559,7 @@ input.f-sub{padding:6px 9px;font-size:12px;font-weight:500;border:0.5px solid #d
 // ══════════════════════════════════════════
 //  CONFIGURATION — update these values
 // ══════════════════════════════════════════
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyOird4Fr5QGu70EgaBFitFgX6IW5q06M5SoR94cfKQAwNc4inkDcJBX0heLGcDUdeJPg/exec';
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby60paJEnYn29Gia0LJItFOR2tiFUeYslZUQCtk316ioBt6p3OBUhFZwFA18zYto7aJ4w/exec';
 const OWNER_PIN = '8427';
 
 // ══════════════════════════════════════════
@@ -630,7 +630,7 @@ function verifyPin() {
 // ══════════════════════════════════════════
 //  DATE
 // ══════════════════════════════════════════
-function initCashbook() {
+async function initCashbook() {
   const today = new Date();
   currentDate = today.toISOString().split('T')[0];
   document.getElementById('sel-date').value = currentDate;
@@ -639,8 +639,10 @@ function initCashbook() {
   calc();
   startAutoSave();
   window.addEventListener('beforeunload', function() {
-    if (hasFormData()) silentSave();
+    if (hasFormData() && !isLoadedData) silentSave();
   });
+  // Auto-load today's saved data on first open
+  await loadDateData(currentDate);
 }
 
 // ══════════════════════════════════════════
