@@ -559,7 +559,7 @@ input.f-sub{padding:6px 9px;font-size:12px;font-weight:500;border:0.5px solid #d
 // ══════════════════════════════════════════
 //  CONFIGURATION — update these values
 // ══════════════════════════════════════════
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby60paJEnYn29Gia0LJItFOR2tiFUeYslZUQCtk316ioBt6p3OBUhFZwFA18zYto7aJ4w/exec';
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwoL0TtIsOxQhZSQpLe86Qx-dYW2okofmyIULwlbJkr-fM3Zcy1KiuMHtd2X_K0vLaktQ/exec';
 const OWNER_PIN = '8427';
 
 // ══════════════════════════════════════════
@@ -591,6 +591,14 @@ function selectOutlet(outlet) {
   initCashbook();
   showScreen('screen-cashbook');
 }
+
+// Warm up Apps Script as soon as outlet select screen is visible
+// This eliminates cold start delay before staff even pick their outlet
+function warmupScript() {
+  fetch(APPS_SCRIPT_URL + '?action=warmup').catch(() => {});
+}
+// Fire warmup immediately on page load
+warmupScript();
 
 function goBack() {
   if (confirm('Switch outlet? Unsaved changes will be lost.')) {
@@ -661,6 +669,7 @@ let lastSavedPayload = null;
 let isSwitchingDate = false;
 let currentDate = null; // tracks the date we are currently working on
 let isLoadedData = false; // true when form was populated from Sheets, not by user
+const dataCache = {}; // cache: "outlet_date" -> data, avoids repeat Sheets calls
 
 function startAutoSave() {
   if (autoSaveTimer) clearInterval(autoSaveTimer);
@@ -682,6 +691,7 @@ async function autoSave() {
       body: payload
     });
     lastSavedPayload = payload;
+    delete dataCache[currentOutlet + '_' + currentDate]; // invalidate cache after save
     setStatus('autosaved');
   } catch(err) {
     setStatus('unsaved');
@@ -742,13 +752,26 @@ async function onDateChange() {
 }
 
 async function loadDateData(dateVal) {
+  const cacheKey = currentOutlet + '_' + dateVal;
+  const today    = new Date().toISOString().split('T')[0];
+
+  // ── Check cache first ──
+  if (dataCache[cacheKey]) {
+    populateForm(dataCache[cacheKey]);
+    lastSavedPayload = JSON.stringify(buildPayload());
+    setEditBanner(true, dateVal, dateVal === today);
+    setStatus('saved');
+    return;
+  }
+
+  // ── Not in cache — fetch from Sheets ──
   try {
-    const url = APPS_SCRIPT_URL + '?outlet=' + encodeURIComponent(currentOutlet) + '&date=' + encodeURIComponent(dateVal);
+    const url  = APPS_SCRIPT_URL + '?outlet=' + encodeURIComponent(currentOutlet) + '&date=' + encodeURIComponent(dateVal);
     const res  = await fetch(url);
     const json = await res.json();
-    const today = new Date().toISOString().split('T')[0];
 
     if (json.status === 'success' && json.data) {
+      dataCache[cacheKey] = json.data; // store in cache
       populateForm(json.data);
       lastSavedPayload = JSON.stringify(buildPayload());
       setEditBanner(true, dateVal, dateVal === today);
@@ -1018,13 +1041,17 @@ async function saveToSheet() {
   isLoadedData = false; // user explicitly saving — mark as user data
   setStatus('saving');
   try {
+    const payload = buildPayload();
     await fetch(APPS_SCRIPT_URL, {
       method: 'POST',
       mode: 'no-cors',
       headers: {'Content-Type': 'text/plain'},
-      body: JSON.stringify(buildPayload())
+      body: JSON.stringify(payload)
     });
-    // no-cors means we can't read the response — assume success if no exception thrown
+    // Invalidate cache for this date so next load fetches fresh data
+    const cacheKey = currentOutlet + '_' + currentDate;
+    delete dataCache[cacheKey];
+    lastSavedPayload = JSON.stringify(payload);
     setStatus('saved');
   } catch(err) {
     setStatus('error', 'Network error. Check connection.');
