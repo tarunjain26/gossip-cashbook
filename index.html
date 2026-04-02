@@ -643,6 +643,14 @@ async function initCashbook() {
   });
   // Auto-load today's saved data on first open
   await loadDateData(currentDate);
+
+  // Any user input flips isLoadedData to false — marks form as user-modified
+  document.getElementById('screen-cashbook').addEventListener('input', function() {
+    if (isLoadedData) {
+      isLoadedData = false;
+      lastSavedPayload = null;
+    }
+  });
 }
 
 // ══════════════════════════════════════════
@@ -660,11 +668,12 @@ function startAutoSave() {
 }
 
 async function autoSave() {
-  if (isSwitchingDate) return;   // never fire mid-switch
-  if (isLoadedData) return;       // never re-save data that came from Sheets
-  if (!hasFormData()) return;
+  if (isSwitchingDate) return;          // never fire mid-switch
+  if (isLoadedData) return;             // never re-save data that came from Sheets
+  if (!hasFormData()) return;           // nothing to save
   const payload = JSON.stringify(buildPayload());
   if (payload === lastSavedPayload) return; // nothing changed since last save
+  if (!payload || payload.length < 10) return; // safety guard — never save empty payload
   try {
     setStatus('saving');
     await fetch(APPS_SCRIPT_URL, {
@@ -698,7 +707,8 @@ async function onDateChange() {
   document.getElementById('sel-date').disabled = true;
 
   // ── STEP 2: Save OLD date data — only if user actually entered/changed data ──
-  if (hasFormData() && !isLoadedData) {
+  const currentPayload = JSON.stringify(buildPayload());
+  if (hasFormData() && !isLoadedData && currentPayload !== lastSavedPayload) {
     // currentDate still holds the old date here — buildPayload() uses it
     setStatus('saving');
     try {
@@ -807,8 +817,7 @@ function populateForm(data) {
   });
 
   calc();
-  // Mark as loaded — any subsequent change by user will flip this to false
-  setTimeout(() => { isLoadedData = false; }, 500);
+  // isLoadedData stays true until user explicitly changes something or saves manually
 }
 
 function hasFormData() {
