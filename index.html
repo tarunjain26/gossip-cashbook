@@ -638,27 +638,35 @@ function verifyPin() {
 // ══════════════════════════════════════════
 //  DATE
 // ══════════════════════════════════════════
+let inputListenerAdded = false; // guard against duplicate listeners
+let isPopulating = false;        // lock to prevent concurrent populateForm calls
+
 async function initCashbook() {
   const today = new Date();
   currentDate = today.toISOString().split('T')[0];
   document.getElementById('sel-date').value = currentDate;
   setLedgerDate(today);
   setEditBanner(false);
+  resetForm();
   calc();
   startAutoSave();
-  window.addEventListener('beforeunload', function() {
-    if (hasFormData() && !isLoadedData) silentSave();
-  });
+
+  // Add beforeunload + input listeners only once ever
+  if (!inputListenerAdded) {
+    inputListenerAdded = true;
+    window.addEventListener('beforeunload', function() {
+      if (hasFormData() && !isLoadedData) silentSave();
+    });
+    document.getElementById('screen-cashbook').addEventListener('input', function() {
+      if (isLoadedData) {
+        isLoadedData = false;
+        lastSavedPayload = null;
+      }
+    });
+  }
+
   // Auto-load today's saved data on first open
   await loadDateData(currentDate);
-
-  // Any user input flips isLoadedData to false — marks form as user-modified
-  document.getElementById('screen-cashbook').addEventListener('input', function() {
-    if (isLoadedData) {
-      isLoadedData = false;
-      lastSavedPayload = null;
-    }
-  });
 }
 
 // ══════════════════════════════════════════
@@ -752,6 +760,7 @@ async function onDateChange() {
 }
 
 async function loadDateData(dateVal) {
+  if (isPopulating) return; // don't load if already populating
   const cacheKey = currentOutlet + '_' + dateVal;
   const today    = new Date().toISOString().split('T')[0];
 
@@ -811,8 +820,23 @@ function setEditBanner(show, dateVal, isToday) {
 }
 
 function populateForm(data) {
+  // Prevent concurrent population — if already populating, skip
+  if (isPopulating) return;
+  isPopulating = true;
   isLoadedData = true;
-  resetForm();
+
+  // Hard reset first — clear lists AND DOM
+  Object.keys(lists).forEach(k => {
+    lists[k] = [];
+    const el = document.getElementById(k + '-list');
+    if (el) el.innerHTML = '';
+  });
+  ['ob','cafe-sales','online-sales','card-upi','bank-dep'].forEach(id => {
+    const el = document.getElementById(id); if(el) el.value = '';
+  });
+  ['cafe-desc','online-desc','cardupi-desc','bank-desc'].forEach(id => {
+    const el = document.getElementById(id); if(el) el.value = '';
+  });
 
   // Simple fields
   document.getElementById('ob').value          = data.openingBalance || '';
@@ -825,22 +849,30 @@ function populateForm(data) {
   document.getElementById('bank-dep').value    = data.bankDeposit || '';
   document.getElementById('bank-desc').value   = data.bankDepositDesc || '';
 
-  // Line item lists
+  // Line item lists — build fresh, never append
   const secMap = {
     duesIn: 'dues-in', owner: 'owner', advIn: 'adv-in', miscIn: 'misc-in',
     raw: 'raw', sal: 'sal', petty: 'petty', duesOut: 'dues-out', advAdj: 'adv-adj'
   };
   Object.entries(secMap).forEach(([key, sec]) => {
-    if (data.entries && data.entries[key]) {
-      lists[sec] = data.entries[key].map(e => ({
-        id: Date.now() + Math.random(), desc: e.desc || '', amt: parseFloat(e.amt) || 0
-      }));
-      renderList(sec);
+    lists[sec] = []; // always start empty
+    if (data.entries && data.entries[key] && data.entries[key].length > 0) {
+      data.entries[key].forEach(e => {
+        if (parseFloat(e.amt) > 0 || e.desc) {
+          lists[sec].push({
+            id: Date.now() + Math.random(),
+            desc: e.desc || '',
+            amt: parseFloat(e.amt) || 0
+          });
+        }
+      });
     }
+    renderList(sec);
   });
 
   calc();
-  // isLoadedData stays true until user explicitly changes something or saves manually
+  isPopulating = false; // release lock
+  // isLoadedData stays true until user explicitly changes something
 }
 
 function hasFormData() {
