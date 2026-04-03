@@ -655,7 +655,7 @@ input.f-sub{padding:6px 9px;font-size:12px;font-weight:500;border:0.5px solid #d
 // ══════════════════════════════════════════
 //  CONFIGURATION — update these values
 // ══════════════════════════════════════════
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyj5KXvL5aIJin0VMVV0o6oJ0rvhjR83OaPZkzr6LHIn21jQfNaZgMw9WwurdfBZcLKcQ/exec';
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwoL0TtIsOxQhZSQpLe86Qx-dYW2okofmyIULwlbJkr-fM3Zcy1KiuMHtd2X_K0vLaktQ/exec';
 const OWNER_PIN = '8427';
 
 // ══════════════════════════════════════════
@@ -1154,7 +1154,7 @@ function buildPayload() {
     cardUpiDesc: document.getElementById('cardupi-desc').value,
     bankDeposit: parseFloat(document.getElementById('bank-dep').value)||0,
     bankDepositDesc: document.getElementById('bank-desc').value,
-    closingBalance: parseFloat(document.getElementById('closing-bal').textContent.replace(/[₹,]/g,'')),
+    closingBalance: parseFloat(document.getElementById('closing-bal').textContent.replace(/[₹,]/g,'').replace('−','-')) || 0,
     entries: {
       duesIn:   lists['dues-in'],
       owner:    lists['owner'],
