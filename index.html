@@ -218,6 +218,34 @@ input.f-sub{padding:6px 9px;font-size:12px;font-weight:500;border:0.5px solid #d
 .cat-bar-fill{height:8px;border-radius:4px;transition:width 0.4s}
 .cat-bar-val{font-size:11px;color:var(--ink2);width:70px;text-align:right;flex-shrink:0}
 
+/* ── CASH COUNT ── */
+.cash-count-card{background:#fff;border:0.5px solid #e0d5c8;border-radius:var(--radius-lg);margin-bottom:1rem;overflow:hidden}
+.cash-count-head{padding:11px 16px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none}
+.cash-count-head:hover{background:var(--cream2)}
+.cash-count-title{font-size:13px;font-weight:500;color:var(--ink);display:flex;align-items:center;gap:8px}
+.cash-count-title .cc-icon{width:22px;height:22px;background:var(--cream2);border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:12px}
+.cash-count-toggle{font-size:12px;color:var(--ink3);display:flex;align-items:center;gap:6px}
+.cash-count-toggle .arrow{transition:transform 0.2s;display:inline-block}
+.cash-count-toggle .arrow.open{transform:rotate(180deg)}
+.cash-count-body{padding:0 16px 14px;display:none}
+.cash-count-body.open{display:block}
+.denom-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-bottom:12px}
+.denom-item{display:flex;flex-direction:column;gap:3px}
+.denom-item label{font-size:10px;color:var(--ink3);font-weight:500;text-align:center}
+.denom-item input{padding:7px 6px;font-size:13px;font-weight:500;border:0.5px solid #d8cfc4;border-radius:7px;background:var(--cream);color:var(--ink);font-family:'DM Sans',sans-serif;text-align:center;width:100%}
+.denom-item input:focus{outline:none;border-color:#b0a090}
+.denom-item .denom-val{font-size:10px;color:var(--ink3);text-align:center;min-height:14px}
+.cash-count-summary{background:var(--cream2);border-radius:9px;padding:10px 14px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.cc-sum-item .lbl{font-size:10px;color:var(--ink3);margin-bottom:2px;text-transform:uppercase;letter-spacing:0.04em}
+.cc-sum-item .val{font-size:16px;font-weight:500;font-family:'Playfair Display',serif}
+.cc-sum-item .val.match{color:var(--green-mid)}
+.cc-sum-item .val.over{color:var(--gold)}
+.cc-sum-item .val.short{color:var(--red-mid)}
+.diff-badge{display:inline-block;font-size:11px;padding:2px 10px;border-radius:10px;font-weight:500;margin-top:3px}
+.diff-badge.match{background:var(--green-light);color:var(--green-dark)}
+.diff-badge.over{background:var(--gold-light);color:#7a5000}
+.diff-badge.short{background:var(--red-light);color:var(--red-dark)}
+
 /* responsive */
 @media(max-width:640px){
   .two-col{grid-template-columns:1fr}
@@ -438,6 +466,74 @@ input.f-sub{padding:6px 9px;font-size:12px;font-weight:500;border:0.5px solid #d
       </div>
     </div>
 
+    <!-- CASH COUNT -->
+    <div class="cash-count-card" id="cash-count-card">
+      <div class="cash-count-head" onclick="toggleCashCount()">
+        <div class="cash-count-title">
+          <span class="cc-icon">₹</span>
+          End-of-day Cash Count
+        </div>
+        <div class="cash-count-toggle">
+          <span id="cc-preview">Tap to count cash in drawer</span>
+          <span class="arrow" id="cc-arrow">▼</span>
+        </div>
+      </div>
+      <div class="cash-count-body" id="cash-count-body">
+        <div class="denom-grid">
+          <div class="denom-item">
+            <label>₹500 × </label>
+            <input type="number" id="d500" placeholder="0" min="0" oninput="calcCashCount()">
+            <div class="denom-val" id="dv500">—</div>
+          </div>
+          <div class="denom-item">
+            <label>₹200 × </label>
+            <input type="number" id="d200" placeholder="0" min="0" oninput="calcCashCount()">
+            <div class="denom-val" id="dv200">—</div>
+          </div>
+          <div class="denom-item">
+            <label>₹100 × </label>
+            <input type="number" id="d100" placeholder="0" min="0" oninput="calcCashCount()">
+            <div class="denom-val" id="dv100">—</div>
+          </div>
+          <div class="denom-item">
+            <label>₹50 × </label>
+            <input type="number" id="d50" placeholder="0" min="0" oninput="calcCashCount()">
+            <div class="denom-val" id="dv50">—</div>
+          </div>
+          <div class="denom-item">
+            <label>₹20 × </label>
+            <input type="number" id="d20" placeholder="0" min="0" oninput="calcCashCount()">
+            <div class="denom-val" id="dv20">—</div>
+          </div>
+          <div class="denom-item">
+            <label>₹10 × </label>
+            <input type="number" id="d10" placeholder="0" min="0" oninput="calcCashCount()">
+            <div class="denom-val" id="dv10">—</div>
+          </div>
+          <div class="denom-item">
+            <label>Coins (₹)</label>
+            <input type="number" id="d-coins" placeholder="0" min="0" oninput="calcCashCount()">
+            <div class="denom-val" id="dv-coins">—</div>
+          </div>
+        </div>
+        <div class="cash-count-summary">
+          <div class="cc-sum-item">
+            <div class="lbl">Cash in drawer</div>
+            <div class="val" id="cc-drawer">₹0</div>
+          </div>
+          <div class="cc-sum-item">
+            <div class="lbl">Expected closing</div>
+            <div class="val" id="cc-expected">₹0</div>
+          </div>
+          <div class="cc-sum-item">
+            <div class="lbl">Difference</div>
+            <div class="val" id="cc-diff">—</div>
+            <div id="cc-diff-badge"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- EDIT BANNER -->
     <div class="edit-banner" id="edit-banner">
       <span id="edit-banner-text">Viewing saved data</span>
@@ -559,7 +655,7 @@ input.f-sub{padding:6px 9px;font-size:12px;font-weight:500;border:0.5px solid #d
 // ══════════════════════════════════════════
 //  CONFIGURATION — update these values
 // ══════════════════════════════════════════
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwoL0TtIsOxQhZSQpLe86Qx-dYW2okofmyIULwlbJkr-fM3Zcy1KiuMHtd2X_K0vLaktQ/exec';
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyj5KXvL5aIJin0VMVV0o6oJ0rvhjR83OaPZkzr6LHIn21jQfNaZgMw9WwurdfBZcLKcQ/exec';
 const OWNER_PIN = '8427';
 
 // ══════════════════════════════════════════
@@ -1042,9 +1138,13 @@ function setStatus(state, msg) {
 
 function buildPayload() {
   const date = currentDate; // always use JS-tracked date, never read from input mid-switch
+  const cc = getCashCountData();
   return {
     outlet: currentOutlet,
     date,
+    cashDrawerTotal: cc.drawerTotal,
+    cashDifference: cc.cashDifference,
+    denominations: cc.denoms,
     openingBalance: parseFloat(document.getElementById('ob').value)||0,
     cafeSales: parseFloat(document.getElementById('cafe-sales').value)||0,
     cafeSalesDesc: document.getElementById('cafe-desc').value,
@@ -1094,6 +1194,7 @@ async function saveToSheet() {
 //  RESET
 // ══════════════════════════════════════════
 function resetForm() {
+  resetCashCount();
   Object.keys(lists).forEach(k => { lists[k] = []; renderList(k); });
   ['ob','cafe-sales','online-sales','card-upi','bank-dep'].forEach(id => {
     const el = document.getElementById(id); if(el) el.value = '';
@@ -1339,6 +1440,102 @@ function renderCatBars(elId, catData, color) {
 function fmtD(n) { return '₹' + Math.round(n).toLocaleString('en-IN'); }
 function sumE(arr) { return arr ? arr.reduce((a,e)=>a+(parseFloat(e.amt)||0),0) : 0; }
 function add(obj, key, val) { obj[key] = (obj[key]||0) + val; }
+
+// ══════════════════════════════════════════
+//  CASH COUNT
+// ══════════════════════════════════════════
+const DENOMS = [
+  { id: 'd500',    val: 500  },
+  { id: 'd200',    val: 200  },
+  { id: 'd100',    val: 100  },
+  { id: 'd50',     val: 50   },
+  { id: 'd20',     val: 20   },
+  { id: 'd10',     val: 10   },
+  { id: 'd-coins', val: 1    },
+];
+
+function toggleCashCount() {
+  const body  = document.getElementById('cash-count-body');
+  const arrow = document.getElementById('cc-arrow');
+  const isOpen = body.classList.toggle('open');
+  arrow.classList.toggle('open', isOpen);
+  if (isOpen) calcCashCount();
+}
+
+function calcCashCount() {
+  let total = 0;
+  DENOMS.forEach(d => {
+    const qty = parseInt(document.getElementById(d.id).value) || 0;
+    const amt = qty * d.val;
+    total += amt;
+    const dvEl = document.getElementById('dv' + d.id.replace('d','').replace('-coins','coins').replace('d-',''));
+    // fix id mapping
+    const dvId = d.id === 'd-coins' ? 'dv-coins' : 'dv' + d.id.replace('d','');
+    const dv = document.getElementById(dvId);
+    if (dv) dv.textContent = amt > 0 ? fmt(amt) : '—';
+  });
+
+  const closing = parseFloat(document.getElementById('closing-bal').textContent.replace(/[₹,]/g,'').replace('−','-')) || 0;
+
+  document.getElementById('cc-drawer').textContent   = fmt(total);
+  document.getElementById('cc-expected').textContent = fmt(closing);
+
+  const diffEl  = document.getElementById('cc-diff');
+  const badgeEl = document.getElementById('cc-diff-badge');
+  const preview = document.getElementById('cc-preview');
+
+  if (total === 0) {
+    diffEl.textContent  = '—';
+    diffEl.className    = 'val';
+    badgeEl.innerHTML   = '';
+    preview.textContent = 'Tap to count cash in drawer';
+    return;
+  }
+
+  const diff = closing - total;
+  const absDiff = Math.abs(diff);
+
+  if (diff === 0) {
+    diffEl.textContent = '₹0';
+    diffEl.className   = 'val match';
+    badgeEl.innerHTML  = '<span class="diff-badge match">Perfect match ✓</span>';
+    preview.textContent = 'Cash balanced ✓';
+  } else if (diff > 0) {
+    diffEl.textContent = fmt(diff) + ' short';
+    diffEl.className   = 'val short';
+    badgeEl.innerHTML  = '<span class="diff-badge short">Cash short by ' + fmt(absDiff) + '</span>';
+    preview.textContent = 'Short by ' + fmt(absDiff);
+  } else {
+    diffEl.textContent = fmt(absDiff) + ' over';
+    diffEl.className   = 'val over';
+    badgeEl.innerHTML  = '<span class="diff-badge over">Cash over by ' + fmt(absDiff) + '</span>';
+    preview.textContent = 'Over by ' + fmt(absDiff);
+  }
+}
+
+function getCashCountData() {
+  const denoms = {};
+  DENOMS.forEach(d => {
+    denoms[d.id] = parseInt(document.getElementById(d.id).value) || 0;
+  });
+  const total   = DENOMS.reduce((a,d) => a + (denoms[d.id] * d.val), 0);
+  const closing = parseFloat(document.getElementById('closing-bal').textContent.replace(/[₹,]/g,'').replace('−','-')) || 0;
+  const diff    = closing - total;
+  return { denoms, drawerTotal: total, expectedClosing: closing, cashDifference: diff };
+}
+
+function resetCashCount() {
+  DENOMS.forEach(d => { document.getElementById(d.id).value = ''; });
+  ['dv500','dv200','dv100','dv50','dv20','dv10','dv-coins'].forEach(id => {
+    const el = document.getElementById(id); if(el) el.textContent = '—';
+  });
+  document.getElementById('cc-drawer').textContent   = '₹0';
+  document.getElementById('cc-expected').textContent = '₹0';
+  document.getElementById('cc-diff').textContent     = '—';
+  document.getElementById('cc-diff').className       = 'val';
+  document.getElementById('cc-diff-badge').innerHTML = '';
+  document.getElementById('cc-preview').textContent  = 'Tap to count cash in drawer';
+}
 
 </script>
 </body>
