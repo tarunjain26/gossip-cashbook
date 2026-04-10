@@ -9,13 +9,13 @@
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --bg:#0f0f0f;--bg2:#1a1a1a;--bg3:#242424;--bg4:#2e2e2e;
-  --border:#333;--border2:#444;
-  --text:#f0ebe3;--text2:#a89f94;--text3:#6b6460;
-  --orange:#e8613a;--orange2:#c44d28;--orange-light:#3d1f14;
-  --green:#2d7a4f;--green-light:#1a3d28;--green-bright:#4ade80;
-  --red:#c0392b;--red-light:#3d1515;--red-bright:#f87171;
-  --gold:#c9943a;--gold-light:#3d2e14;
+  --bg:#FDF8F3;--bg2:#ffffff;--bg3:#F5EDE0;--bg4:#EDE0CC;
+  --border:#E0D5C8;--border2:#D0C4B0;
+  --text:#1a1a1a;--text2:#5a5045;--text3:#9a9090;
+  --orange:#e8613a;--orange2:#c44d28;--orange-light:#FDF0EB;
+  --green:#1a4a2e;--green-light:#e8f5ee;--green-bright:#1a7a4a;
+  --red:#c0392b;--red-light:#fdecea;--red-bright:#c0392b;
+  --gold:#c9943a;--gold-light:#FDF3E3;
   --radius:10px;--radius-lg:14px;--radius-xl:20px;
 }
 body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
@@ -28,14 +28,14 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 #screen-select{
   min-height:100vh;display:flex;flex-direction:column;
   align-items:center;justify-content:center;padding:2rem;
-  background:var(--bg);
+  background:#1a1a1a;
 }
 .select-brand{text-align:center;margin-bottom:3rem}
 .select-brand img{height:160px;width:auto;mix-blend-mode:screen;margin-bottom:0.5rem}
 .select-brand p{font-size:11px;color:var(--text3);letter-spacing:0.15em;text-transform:uppercase}
 .outlet-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;width:100%;max-width:600px;margin-bottom:2rem}
 .outlet-btn{
-  background:var(--bg2);border:0.5px solid var(--border);
+  background:#2a2a2a;border:0.5px solid #444;
   border-radius:var(--radius-lg);padding:1.5rem 1rem;
   text-align:center;cursor:pointer;
   transition:all 0.2s;position:relative;overflow:hidden
@@ -48,19 +48,20 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .outlet-btn:hover::before{opacity:0.05}
 .outlet-btn .icon{
   width:44px;height:44px;border-radius:50%;
-  background:var(--bg3);border:0.5px solid var(--border2);
+  background:#3a3a3a;border:0.5px solid #555;
   margin:0 auto 12px;display:flex;align-items:center;
   justify-content:center;font-family:'Fraunces',serif;
   font-size:18px;color:var(--orange)
 }
-.outlet-btn .name{font-family:'Fraunces',serif;font-size:15px;color:var(--text);margin-bottom:3px}
-.outlet-btn .sub{font-size:10px;color:var(--text3);letter-spacing:0.05em}
+.outlet-btn .name{font-family:'Fraunces',serif;font-size:15px;color:#F5E6D3;margin-bottom:3px}
+.outlet-btn .sub{font-size:10px;color:#888;letter-spacing:0.05em}
 .owner-btn{
   font-size:12px;color:var(--text3);background:transparent;
   border:none;cursor:pointer;font-family:'DM Sans',sans-serif;
   text-decoration:underline;text-underline-offset:3px
 }
-.owner-btn:hover{color:var(--text2)}
+.owner-btn{color:#888 !important}
+.owner-btn:hover{color:#F5E6D3 !important}
 
 /* ── PIN MODAL ── */
 .modal-overlay{
@@ -70,16 +71,16 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 }
 .modal-overlay.open{display:flex}
 .modal{
-  background:var(--bg2);border:0.5px solid var(--border2);
+  background:#1a1a1a;border:0.5px solid #444;
   border-radius:var(--radius-xl);padding:2rem;width:320px;text-align:center
 }
-.modal h3{font-family:'Fraunces',serif;font-size:22px;color:var(--text);margin-bottom:6px}
-.modal p{font-size:12px;color:var(--text3);margin-bottom:1.5rem}
+.modal h3{font-family:'Fraunces',serif;font-size:22px;color:#F5E6D3;margin-bottom:6px}
+.modal p{font-size:12px;color:#888;margin-bottom:1.5rem}
 .pin-input{
   width:100%;padding:14px;font-size:22px;text-align:center;
-  letter-spacing:0.4em;background:var(--bg3);
-  border:0.5px solid var(--border2);border-radius:var(--radius);
-  color:var(--text);font-family:'DM Sans',sans-serif;margin-bottom:8px
+  letter-spacing:0.4em;background:#2a2a2a;
+  border:0.5px solid #555;border-radius:var(--radius);
+  color:#F5E6D3;font-family:'DM Sans',sans-serif;margin-bottom:8px
 }
 .pin-error{font-size:11px;color:var(--red-bright);min-height:16px;margin-bottom:8px}
 .btn-orange{
@@ -101,28 +102,28 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 
 /* top bar */
 .topbar{
-  background:var(--bg2);border:0.5px solid var(--border);
+  background:#1a1a1a;border:0.5px solid #333;
   border-radius:var(--radius-lg);padding:1rem 1.5rem;
   display:flex;align-items:center;justify-content:space-between;
   margin-bottom:1rem
 }
 .topbar-left{display:flex;align-items:center;gap:12px}
 .topbar-left img{height:40px;width:auto;mix-blend-mode:screen}
-.topbar-outlet{font-size:11px;color:var(--text3);letter-spacing:0.08em;text-transform:uppercase}
+.topbar-outlet{font-size:11px;color:#888;letter-spacing:0.08em;text-transform:uppercase}
 .topbar-right{display:flex;align-items:center;gap:10px}
-.topbar-right label{font-size:11px;color:var(--text3)}
+.topbar-right label{font-size:11px;color:#888}
 .date-input{
-  background:var(--bg3);border:0.5px solid var(--border2);
-  border-radius:8px;color:var(--text);padding:6px 10px;
+  background:#2a2a2a;border:0.5px solid #444;
+  border-radius:8px;color:#F5E6D3;padding:6px 10px;
   font-size:13px;font-family:'DM Sans',sans-serif
 }
 .switch-btn{
   font-size:11px;padding:6px 12px;background:transparent;
-  border:0.5px solid var(--border2);border-radius:6px;
-  color:var(--text3);cursor:pointer;font-family:'DM Sans',sans-serif;
+  border:0.5px solid #555;border-radius:6px;
+  color:#888;cursor:pointer;font-family:'DM Sans',sans-serif;
   transition:all 0.15s
 }
-.switch-btn:hover{border-color:var(--text2);color:var(--text)}
+.switch-btn:hover{border-color:#aaa;color:#F5E6D3}
 
 /* status bar */
 .status-bar{
@@ -242,19 +243,19 @@ input.f-sub{
 
 /* balance card */
 .bal-card{
-  background:var(--bg2);border:0.5px solid var(--border);
+  background:#1a1a1a;border:0.5px solid #333;
   border-radius:var(--radius-lg);padding:1.25rem 1.5rem;margin-bottom:1rem
 }
 .bal-title{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:12px}
 .bal-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-bottom:8px}
-.bi{background:var(--bg3);border-radius:9px;padding:9px 11px}
+.bi{background:#2a2a2a;border-radius:9px;padding:9px 11px}
 .bi .bl{font-size:9px;color:var(--text3);margin-bottom:3px;text-transform:uppercase;letter-spacing:0.04em}
 .bi .bv{font-size:14px;font-weight:500}
 .bi.g .bv{color:var(--green-bright)}
 .bi.r .bv{color:var(--red-bright)}
-.bi.n .bv{color:var(--text2)}
+.bi.n .bv{color:#a89f94}
 .bal-result{
-  border-top:0.5px solid var(--border);padding-top:12px;
+  border-top:0.5px solid #333;padding-top:12px;
   display:flex;align-items:center;justify-content:space-between
 }
 .bal-rl{font-size:13px;color:var(--text3);font-family:'Fraunces',serif;font-style:italic}
@@ -322,27 +323,27 @@ input.f-sub{
 #screen-dashboard{background:var(--bg)}
 .dash-wrap{max-width:1000px;margin:0 auto;padding:1rem}
 .dash-topbar{
-  background:var(--bg2);border:0.5px solid var(--border);
+  background:#1a1a1a;border:0.5px solid #333;
   border-radius:var(--radius-lg);padding:1rem 1.5rem;
   display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem
 }
 .dash-topbar-left{display:flex;align-items:center;gap:12px}
 .dash-topbar-left img{height:40px;width:auto;mix-blend-mode:screen}
-.dash-sub{font-size:11px;color:var(--text3);letter-spacing:0.08em;text-transform:uppercase}
+.dash-sub{font-size:11px;color:#888;letter-spacing:0.08em;text-transform:uppercase}
 .dash-tabs{display:flex;gap:6px;align-items:center}
 .dash-tab{
   font-size:12px;padding:6px 14px;border-radius:6px;
-  border:0.5px solid var(--border2);color:var(--text3);
+  border:0.5px solid #555;color:#888;
   cursor:pointer;font-family:'DM Sans',sans-serif;background:transparent;transition:all 0.15s
 }
-.dash-tab:hover{border-color:var(--text2);color:var(--text)}
+.dash-tab:hover{border-color:#aaa;color:#F5E6D3}
 .dash-tab.active{background:var(--orange);border-color:var(--orange);color:#fff}
 .dash-back{
   font-size:11px;padding:6px 12px;background:transparent;
-  border:0.5px solid var(--border2);border-radius:6px;
-  color:var(--text3);cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.15s
+  border:0.5px solid #555;border-radius:6px;
+  color:#888;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.15s
 }
-.dash-back:hover{border-color:var(--text2);color:var(--text)}
+.dash-back:hover{border-color:#aaa;color:#F5E6D3}
 .dash-section{display:none}.dash-section.active{display:block}
 .dash-controls{
   background:var(--bg2);border:0.5px solid var(--border);
@@ -419,6 +420,13 @@ input.f-sub{
 .cat-val{font-size:11px;color:var(--text2);width:70px;text-align:right;flex-shrink:0}
 
 .dash-loading{text-align:center;padding:40px;font-size:13px;color:var(--text3)}
+
+.btn-export{
+  padding:7px 16px;background:var(--green-light);color:var(--green-bright);
+  border:0.5px solid var(--green);border-radius:7px;font-size:12px;font-weight:500;
+  font-family:'DM Sans',sans-serif;cursor:pointer;transition:all 0.15s
+}
+.btn-export:hover{background:var(--green);color:#fff}
 
 /* responsive */
 @media(max-width:640px){
@@ -698,6 +706,7 @@ input.f-sub{
       <div class="dash-tabs">
         <button class="dash-tab active" onclick="showDashTab('today')">Today</button>
         <button class="dash-tab" onclick="showDashTab('monthly')">Monthly</button>
+        <button class="dash-tab" onclick="showDashTab('reports')">Reports</button>
         <button class="dash-back" onclick="showScreen('screen-select')">← Back</button>
       </div>
     </div>
@@ -758,6 +767,66 @@ input.f-sub{
         </table>
       </div>
     </div>
+
+    <!-- REPORTS -->
+    <div class="dash-section" id="dash-reports">
+      <div class="dash-controls">
+        <label>From</label>
+        <input type="date" id="rep-from">
+        <label>To</label>
+        <input type="date" id="rep-to">
+        <label>Outlet</label>
+        <select id="rep-outlet">
+          <option value="all">All Outlets</option>
+          <option value="Talwandi">Talwandi</option>
+          <option value="Aerodrome">Aerodrome</option>
+          <option value="RN1">R N 1</option>
+        </select>
+        <button class="btn-refresh" onclick="loadReport()">Generate</button>
+        <button class="btn-export" id="btn-export" onclick="exportCSV()" style="display:none">↓ Export CSV</button>
+        <span class="dash-status" id="rep-status"></span>
+      </div>
+
+      <!-- P&L Summary -->
+      <div class="summary-row" id="rep-summary" style="display:none">
+        <div class="sum-box inc"><div class="lbl">Total Income</div><div class="val" id="rep-inc">—</div></div>
+        <div class="sum-box exp"><div class="lbl">Total Expense</div><div class="val" id="rep-exp">—</div></div>
+        <div class="sum-box profit"><div class="lbl">Net Profit</div><div class="val" id="rep-profit">—</div></div>
+        <div class="sum-box days"><div class="lbl">Days Recorded</div><div class="val" id="rep-days">—</div></div>
+      </div>
+
+      <!-- Category breakdown -->
+      <div class="cat-grid" id="rep-cats" style="display:none">
+        <div class="cat-card"><h4>Income breakdown</h4><div id="rep-inc-bars"></div></div>
+        <div class="cat-card"><h4>Expense breakdown</h4><div id="rep-exp-bars"></div></div>
+      </div>
+
+      <!-- Day by day table -->
+      <div class="month-wrap" id="rep-table-wrap" style="display:none">
+        <div class="month-head">
+          <h3>Day-by-day detail</h3>
+          <span id="rep-range-label" style="font-size:11px;color:var(--text3)"></span>
+        </div>
+        <div style="overflow-x:auto">
+        <table class="mtable" style="min-width:700px">
+          <thead><tr>
+            <th style="width:12%">Date</th>
+            <th style="width:13%">Outlet</th>
+            <th style="width:13%">Opening</th>
+            <th style="width:13%">Income</th>
+            <th style="width:13%">Expense</th>
+            <th style="width:12%">Profit</th>
+            <th style="width:12%">Closing</th>
+            <th style="width:12%">Cash Diff</th>
+          </tr></thead>
+          <tbody id="rep-tbody">
+            <tr><td colspan="8" class="dash-loading">Select date range and click Generate</td></tr>
+          </tbody>
+        </table>
+        </div>
+      </div>
+    </div>
+
   </div>
 </div>
 
@@ -1390,9 +1459,10 @@ function initDashboard() {
 }
 
 window.showDashTab = function(tab) {
-  document.querySelectorAll('.dash-tab').forEach((t,i) => t.classList.toggle('active', ['today','monthly'][i]===tab));
+  document.querySelectorAll('.dash-tab').forEach((t,i) => t.classList.toggle('active', ['today','monthly','reports'][i]===tab));
   document.querySelectorAll('.dash-section').forEach(s => s.classList.remove('active'));
   document.getElementById('dash-'+tab).classList.add('active');
+  if (tab === 'reports') initReports();
 };
 
 window.loadDashboard = async function() {
@@ -1546,6 +1616,196 @@ function renderCatBars(elId, catData, color) {
       <div class="cat-track"><div class="cat-fill" style="width:${Math.round(val/max*100)}%;background:${color}"></div></div>
       <span class="cat-val">${fmt(val)}</span>
     </div>`).join('');
+}
+
+// ══════════════════════════════════════════════════════
+//  REPORTS
+// ══════════════════════════════════════════════════════
+let reportData = [];
+
+function initReports() {
+  if (document.getElementById('rep-from').value) return;
+  const now  = new Date();
+  const from = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split('T')[0];
+  const to   = now.toISOString().split('T')[0];
+  document.getElementById('rep-from').value = from;
+  document.getElementById('rep-to').value   = to;
+}
+
+window.loadReport = async function() {
+  const from   = document.getElementById('rep-from').value;
+  const to     = document.getElementById('rep-to').value;
+  const outlet = document.getElementById('rep-outlet').value;
+
+  if (!from || !to) { alert('Please select a date range'); return; }
+  if (from > to)    { alert('From date must be before To date'); return; }
+
+  document.getElementById('rep-status').textContent = 'Loading...';
+  document.getElementById('btn-export').style.display = 'none';
+
+  try {
+    let q;
+    if (outlet === 'all') {
+      q = query(collection(db, 'daily_entries'), where('date', '>=', from), where('date', '<=', to));
+    } else {
+      q = query(collection(db, 'daily_entries'), where('outlet', '==', outlet), where('date', '>=', from), where('date', '<=', to));
+    }
+    const snap = await getDocs(q);
+    reportData = [];
+    snap.forEach(d => reportData.push(d.data()));
+    reportData.sort((a,b) => a.date.localeCompare(b.date) || a.outlet.localeCompare(b.outlet));
+
+    renderReport(reportData, from, to, outlet);
+    document.getElementById('rep-status').textContent = reportData.length + ' entries loaded';
+    document.getElementById('btn-export').style.display = reportData.length ? 'block' : 'none';
+  } catch(err) {
+    console.error(err);
+    document.getElementById('rep-status').textContent = 'Error loading data';
+  }
+};
+
+function renderReport(rows, from, to, outlet) {
+  // Show sections
+  ['rep-summary','rep-cats','rep-table-wrap'].forEach(id => document.getElementById(id).style.display = '');
+
+  // Range label
+  const fd = new Date(from+'T00:00:00').toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'});
+  const td = new Date(to+'T00:00:00').toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'});
+  document.getElementById('rep-range-label').textContent = fd + ' — ' + td + (outlet!=='all' ? ' · '+OUTLET_NAMES[outlet] : ' · All outlets');
+
+  // Totals + categories
+  let tInc=0, tExp=0;
+  const catInc={}, catExp={};
+
+  rows.forEach(data => {
+    const inc = calcInc(data), exp = calcExp(data);
+    tInc+=inc; tExp+=exp;
+    addCat(catInc,'Cafe Sales',       data.cafeSales||0);
+    addCat(catInc,'Online Sales',     data.onlineSales||0);
+    addCat(catInc,'Card / UPI',       data.cardUpi||0);
+    addCat(catInc,'Dues Collected',   sumEntries(data.entries?.duesIn));
+    addCat(catInc,"Owner's Amount",   sumEntries(data.entries?.owner));
+    addCat(catInc,'Advance Received', sumEntries(data.entries?.advIn));
+    addCat(catInc,'Misc Received',    sumEntries(data.entries?.miscIn));
+    addCat(catExp,'Raw Materials',    sumEntries(data.entries?.raw));
+    addCat(catExp,'Staff Wages',      sumEntries(data.entries?.sal));
+    addCat(catExp,'Petty Cash',       sumEntries(data.entries?.petty));
+    addCat(catExp,'Credit Given',     sumEntries(data.entries?.duesOut));
+    addCat(catExp,'Adv Adjusted',     sumEntries(data.entries?.advAdj));
+    addCat(catExp,'Bank Deposit',     data.bankDeposit||0);
+  });
+
+  const profit = tInc - tExp;
+  document.getElementById('rep-inc').textContent    = fmt(tInc);
+  document.getElementById('rep-exp').textContent    = fmt(tExp);
+  const pEl = document.getElementById('rep-profit');
+  pEl.textContent  = fmt(profit);
+  pEl.style.color  = profit>=0?'var(--green-bright)':'var(--red-bright)';
+  document.getElementById('rep-days').textContent   = rows.length;
+
+  renderCatBars('rep-inc-bars', catInc, 'var(--green-bright)');
+  renderCatBars('rep-exp-bars', catExp, 'var(--orange)');
+
+  // Table
+  const oc  = {Talwandi:'var(--green-light)',Aerodrome:'#0c2040',RN1:'var(--gold-light)'};
+  const otc = {Talwandi:'var(--green-bright)',Aerodrome:'#60a5fa',RN1:'var(--gold)'};
+  const tbody = document.getElementById('rep-tbody');
+
+  if (!rows.length) { tbody.innerHTML='<tr><td colspan="8" class="dash-loading">No data for selected period</td></tr>'; return; }
+
+  tbody.innerHTML = rows.map(data => {
+    const inc  = calcInc(data), exp = calcExp(data), prof = inc-exp;
+    const d    = new Date(data.date+'T00:00:00');
+    const diff = data.cashDifference;
+    const diffStr = diff===0?'<span style="color:var(--green-bright)">✓ 0</span>' :
+                    diff>0 ?`<span style="color:var(--red-bright)">-${fmt(Math.abs(diff))}</span>` :
+                             `<span style="color:var(--gold)">+${fmt(Math.abs(diff))}</span>`;
+    return `<tr>
+      <td style="font-weight:500">${d.toLocaleDateString('en-IN',{day:'numeric',month:'short'})}</td>
+      <td><span style="background:${oc[data.outlet]};color:${otc[data.outlet]};font-size:10px;padding:2px 7px;border-radius:8px;font-weight:500">${data.outlet}</span></td>
+      <td>${fmt(data.openingBalance||0)}</td>
+      <td style="color:var(--green-bright);font-weight:500">${fmt(inc)}</td>
+      <td style="color:var(--red-bright)">${fmt(exp)}</td>
+      <td class="${prof>=0?'p-pos':'p-neg'}">${fmt(prof)}</td>
+      <td style="font-weight:500;text-align:right">${fmt(data.closingBalance||0)}</td>
+      <td style="text-align:right">${diff!==undefined?diffStr:'—'}</td>
+    </tr>`;
+  }).join('') + `<tr style="background:var(--bg3);font-weight:500">
+    <td colspan="3" style="padding:9px 12px;font-size:13px">TOTAL</td>
+    <td style="color:var(--green-bright);font-weight:500;padding:9px 12px">${fmt(tInc)}</td>
+    <td style="color:var(--red-bright);padding:9px 12px">${fmt(tExp)}</td>
+    <td class="${profit>=0?'p-pos':'p-neg'}" style="padding:9px 12px">${fmt(profit)}</td>
+    <td colspan="2"></td>
+  </tr>`;
+}
+
+// ── CSV EXPORT ──────────────────────────────────────────
+window.exportCSV = function() {
+  if (!reportData.length) return;
+
+  const from   = document.getElementById('rep-from').value;
+  const to     = document.getElementById('rep-to').value;
+  const outlet = document.getElementById('rep-outlet').value;
+
+  const headers = [
+    'Date','Outlet','Opening Balance','Cafe Sales','Online Sales','Card/UPI',
+    'Dues Collected','Owner Amount','Advance Received','Misc Received','Total Income',
+    'Raw Materials','Staff Wages','Petty Cash','Credit Given','Advance Adjusted',
+    'Bank Deposit','Total Expense','Closing Balance','Cash in Drawer','Cash Difference'
+  ];
+
+  const rows = reportData.map(data => {
+    const inc = calcInc(data), exp = calcExp(data);
+    return [
+      data.date,
+      data.outlet,
+      data.openingBalance||0,
+      data.cafeSales||0,
+      data.onlineSales||0,
+      data.cardUpi||0,
+      sumEntries(data.entries?.duesIn),
+      sumEntries(data.entries?.owner),
+      sumEntries(data.entries?.advIn),
+      sumEntries(data.entries?.miscIn),
+      inc,
+      sumEntries(data.entries?.raw),
+      sumEntries(data.entries?.sal),
+      sumEntries(data.entries?.petty),
+      sumEntries(data.entries?.duesOut),
+      sumEntries(data.entries?.advAdj),
+      data.bankDeposit||0,
+      exp,
+      data.closingBalance||0,
+      data.cashDrawerTotal||0,
+      data.cashDifference!==undefined ? data.cashDifference : ''
+    ].map(v => typeof v==='string' && v.includes(',') ? '"'+v+'"' : v);
+  });
+
+  // Add totals row
+  const totals = ['TOTAL','','',...Array(7).fill(''),
+    rows.reduce((a,r)=>a+Number(r[10]),0),'','','','','','',
+    rows.reduce((a,r)=>a+Number(r[17]),0),'','',''];
+
+  const csv = [headers, ...rows, totals].map(r => r.join(',')).join('\n');
+  const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href     = url;
+  a.download = 'Gossip_Report_' + (outlet==='all'?'AllOutlets':outlet) + '_' + from + '_to_' + to + '.csv';
+  a.click();
+  URL.revokeObjectURL(url);
+};
+
+function calcInc(data) {
+  return (data.cafeSales||0)+(data.onlineSales||0)+
+    sumEntries(data.entries?.duesIn)+sumEntries(data.entries?.owner)+
+    sumEntries(data.entries?.advIn)+sumEntries(data.entries?.miscIn);
+}
+
+function calcExp(data) {
+  return sumEntries(data.entries?.raw)+sumEntries(data.entries?.sal)+
+    sumEntries(data.entries?.petty)+sumEntries(data.entries?.duesOut)+
+    sumEntries(data.entries?.advAdj)+(data.bankDeposit||0);
 }
 
 // ══════════════════════════════════════════════════════
