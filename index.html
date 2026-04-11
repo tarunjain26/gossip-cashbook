@@ -878,9 +878,9 @@ let isLoadedData    = false;
 let isPopulating    = false;
 let isSwitchingDate = false;
 let inputListenerAdded = false;
-let autoSaveTimer   = null;
+let autoSaveTimer    = null;
+let idleSaveTimer    = null;
 let lastSavedPayload = null;
-const dataCache     = {};
 
 const lists = {
   raw:[], sal:[], petty:[],
@@ -960,6 +960,14 @@ async function initCashbook() {
     });
     document.getElementById('screen-cashbook').addEventListener('input', () => {
       if (isLoadedData) { isLoadedData = false; lastSavedPayload = null; }
+      // Idle save — save 5 seconds after staff stop typing
+      if (idleSaveTimer) clearTimeout(idleSaveTimer);
+      idleSaveTimer = setTimeout(() => {
+        if (hasFormData() && !isLoadedData) {
+          const payload = JSON.stringify(buildPayload());
+          if (payload !== lastSavedPayload) autoSave();
+        }
+      }, 5000);
     });
   }
 
@@ -977,8 +985,13 @@ window.onDateChange = async function() {
   document.getElementById('sel-date').disabled = true;
 
   if (hasFormData() && !isLoadedData) {
-    setStatus('saving');
-    await saveToFirebase(buildPayload());
+    const payload = buildPayload();
+    const currentPayload = JSON.stringify(payload);
+    if (currentPayload !== lastSavedPayload) {
+      setStatus('saving');
+      await saveToFirebase(payload);
+      lastSavedPayload = currentPayload;
+    }
   }
 
   currentDate = newDate;
@@ -1024,8 +1037,6 @@ window.saveEntry = async function() {
   const payload = buildPayload();
   const ok = await saveToFirebase(payload);
   if (ok) {
-    const cacheKey = currentOutlet + '_' + currentDate;
-    delete dataCache[cacheKey];
     lastSavedPayload = JSON.stringify(payload);
     setStatus('saved');
   } else {
@@ -1038,16 +1049,8 @@ window.saveEntry = async function() {
 // ══════════════════════════════════════════════════════
 async function loadDateData(dateVal) {
   if (isPopulating) return;
-  const cacheKey = currentOutlet + '_' + dateVal;
   const today = new Date().toISOString().split('T')[0];
-
-  if (dataCache[cacheKey]) {
-    populateForm(dataCache[cacheKey]);
-    lastSavedPayload = JSON.stringify(buildPayload());
-    setEditBanner(true, dateVal, dateVal === today);
-    setStatus('saved');
-    return;
-  }
+  setStatus('loading');
 
   try {
     const docId = currentOutlet + '_' + dateVal;
@@ -1055,7 +1058,6 @@ async function loadDateData(dateVal) {
 
     if (snap.exists()) {
       const data = snap.data();
-      dataCache[cacheKey] = data;
       populateForm(data);
       lastSavedPayload = JSON.stringify(buildPayload());
       setEditBanner(true, dateVal, dateVal === today);
@@ -1069,7 +1071,7 @@ async function loadDateData(dateVal) {
     console.error('Load error:', err);
     resetForm();
     setEditBanner(false);
-    setStatus('unsaved');
+    setStatus('error', 'Could not load data — check connection');
   }
 }
 
@@ -1078,7 +1080,7 @@ async function loadDateData(dateVal) {
 // ══════════════════════════════════════════════════════
 function startAutoSave() {
   if (autoSaveTimer) clearInterval(autoSaveTimer);
-  autoSaveTimer = setInterval(autoSave, 2 * 60 * 1000);
+  autoSaveTimer = setInterval(autoSave, 30 * 1000); // every 30 seconds
 }
 
 async function autoSave() {
@@ -1089,7 +1091,6 @@ async function autoSave() {
   const ok = await saveToFirebase(buildPayload());
   if (ok) {
     lastSavedPayload = payload;
-    delete dataCache[currentOutlet + '_' + currentDate];
     setStatus('autosaved');
   }
 }
