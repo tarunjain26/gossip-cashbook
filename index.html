@@ -511,7 +511,7 @@ input.f-sub{
 
     <div class="ob-bar">
       <label>Opening Balance (₹)</label>
-      <input type="number" class="ob-input" id="ob" placeholder="0" oninput="calc()">
+      <input type="number" class="ob-input" id="ob" placeholder="0" oninput="calc()" onchange="calc()">
       <div class="ob-display">Carried forward &nbsp;<b id="ob-disp">₹0</b></div>
     </div>
 
@@ -524,26 +524,26 @@ input.f-sub{
         </div>
         <div class="side-body">
           <div class="sec">
-            <div class="sec-label">Cafe Sales (Total — Cash + Card + UPI)</div>
+            <div class="sec-label">Cafe Sales <span style="font-size:10px;color:var(--text3);font-weight:400">(Total counter sales — cash + card + UPI combined)</span></div>
             <div class="simple-row">
               <input class="f-desc" type="text" placeholder="Description (optional)" id="cafe-desc">
-              <input class="f-amt" type="number" placeholder="0" id="cafe-sales" oninput="calc()">
+              <input class="f-amt" type="number" placeholder="0" id="cafe-sales" oninput="calc()" onchange="calc()">
             </div>
           </div>
           <div class="divider"></div>
           <div class="sec">
-            <div class="sec-label">Online Sales (Swiggy / Zomato / Website)</div>
+            <div class="sec-label">Online Sales <span style="font-size:10px;color:var(--text3);font-weight:400">(Swiggy / Zomato — deducted from cash, received digitally)</span></div>
             <div class="simple-row">
               <input class="f-desc" type="text" placeholder="Description (optional)" id="online-desc">
-              <input class="f-amt" type="number" placeholder="0" id="online-sales" oninput="calc()">
+              <input class="f-amt" type="number" placeholder="0" id="online-sales" oninput="calc()" onchange="calc()">
             </div>
           </div>
           <div class="divider"></div>
           <div class="sec">
-            <div class="sec-label">Card / UPI Collected at Counter</div>
+            <div class="sec-label">Card / UPI <span style="font-size:10px;color:var(--text3);font-weight:400">(Non-cash portion of above sales — deducted from cash)</span></div>
             <div class="simple-row">
               <input class="f-desc" type="text" placeholder="Description (optional)" id="cardupi-desc">
-              <input class="f-amt" type="number" placeholder="0" id="card-upi" oninput="calc()">
+              <input class="f-amt" type="number" placeholder="0" id="card-upi" oninput="calc()" onchange="calc()">
             </div>
           </div>
           <div class="divider"></div>
@@ -614,7 +614,7 @@ input.f-sub{
             <div class="sec-label">Cash Deposited in Bank</div>
             <div class="simple-row">
               <input class="f-desc" type="text" placeholder="Bank name / reference" id="bank-desc">
-              <input class="f-amt" type="number" placeholder="0" id="bank-dep" oninput="calc()">
+              <input class="f-amt" type="number" placeholder="0" id="bank-dep" oninput="calc()" onchange="calc()">
             </div>
           </div>
         </div>
@@ -659,13 +659,13 @@ input.f-sub{
       </div>
       <div class="cash-body" id="cash-body">
         <div class="denom-grid">
-          <div class="denom-item"><label>₹500 ×</label><input type="number" id="d500" placeholder="0" min="0" oninput="calcCashCount()"><div class="denom-subtotal" id="dv500"></div></div>
-          <div class="denom-item"><label>₹200 ×</label><input type="number" id="d200" placeholder="0" min="0" oninput="calcCashCount()"><div class="denom-subtotal" id="dv200"></div></div>
-          <div class="denom-item"><label>₹100 ×</label><input type="number" id="d100" placeholder="0" min="0" oninput="calcCashCount()"><div class="denom-subtotal" id="dv100"></div></div>
-          <div class="denom-item"><label>₹50 ×</label><input type="number" id="d50" placeholder="0" min="0" oninput="calcCashCount()"><div class="denom-subtotal" id="dv50"></div></div>
-          <div class="denom-item"><label>₹20 ×</label><input type="number" id="d20" placeholder="0" min="0" oninput="calcCashCount()"><div class="denom-subtotal" id="dv20"></div></div>
-          <div class="denom-item"><label>₹10 ×</label><input type="number" id="d10" placeholder="0" min="0" oninput="calcCashCount()"><div class="denom-subtotal" id="dv10"></div></div>
-          <div class="denom-item"><label>Coins (₹)</label><input type="number" id="d-coins" placeholder="0" min="0" oninput="calcCashCount()"><div class="denom-subtotal" id="dv-coins"></div></div>
+          <div class="denom-item"><label>₹500 ×</label><input type="number" id="d500" placeholder="0" min="0" oninput="calcCashCount()" onchange="calcCashCount()"><div class="denom-subtotal" id="dv500"></div></div>
+          <div class="denom-item"><label>₹200 ×</label><input type="number" id="d200" placeholder="0" min="0" oninput="calcCashCount()" onchange="calcCashCount()"><div class="denom-subtotal" id="dv200"></div></div>
+          <div class="denom-item"><label>₹100 ×</label><input type="number" id="d100" placeholder="0" min="0" oninput="calcCashCount()" onchange="calcCashCount()"><div class="denom-subtotal" id="dv100"></div></div>
+          <div class="denom-item"><label>₹50 ×</label><input type="number" id="d50" placeholder="0" min="0" oninput="calcCashCount()" onchange="calcCashCount()"><div class="denom-subtotal" id="dv50"></div></div>
+          <div class="denom-item"><label>₹20 ×</label><input type="number" id="d20" placeholder="0" min="0" oninput="calcCashCount()" onchange="calcCashCount()"><div class="denom-subtotal" id="dv20"></div></div>
+          <div class="denom-item"><label>₹10 ×</label><input type="number" id="d10" placeholder="0" min="0" oninput="calcCashCount()" onchange="calcCashCount()"><div class="denom-subtotal" id="dv10"></div></div>
+          <div class="denom-item"><label>Coins (₹)</label><input type="number" id="d-coins" placeholder="0" min="0" oninput="calcCashCount()" onchange="calcCashCount()"><div class="denom-subtotal" id="dv-coins"></div></div>
         </div>
         <div class="cash-summary">
           <div class="cs-item"><div class="lbl">Cash in drawer</div><div class="val" id="cc-drawer">₹0</div></div>
@@ -958,17 +958,21 @@ async function initCashbook() {
     window.addEventListener('beforeunload', () => {
       if (hasFormData() && !isLoadedData) silentSave();
     });
-    document.getElementById('screen-cashbook').addEventListener('input', () => {
-      if (isLoadedData) { isLoadedData = false; lastSavedPayload = null; }
-      // Idle save — save 5 seconds after staff stop typing
-      if (idleSaveTimer) clearTimeout(idleSaveTimer);
-      idleSaveTimer = setTimeout(() => {
-        if (hasFormData() && !isLoadedData) {
-          const payload = JSON.stringify(buildPayload());
-          if (payload !== lastSavedPayload) autoSave();
-        }
-      }, 5000);
+    // Fire calc + idle save on input, change, and blur
+    ['input','change'].forEach(evt => {
+      document.getElementById('screen-cashbook').addEventListener(evt, () => {
+        if (isLoadedData) { isLoadedData = false; lastSavedPayload = null; }
+        calc();
+        if (idleSaveTimer) clearTimeout(idleSaveTimer);
+        idleSaveTimer = setTimeout(() => {
+          if (hasFormData() && !isLoadedData) {
+            const payload = JSON.stringify(buildPayload());
+            if (payload !== lastSavedPayload) autoSave();
+          }
+        }, 5000);
+      });
     });
+    document.getElementById('screen-cashbook').addEventListener('blur', () => calc(), true);
   }
 
   await loadDateData(currentDate);
@@ -1179,7 +1183,7 @@ function renderList(sec) {
       <input class="f-desc" type="text" placeholder="Description" value="${e.desc||''}"
         oninput="updateEntry('${sec}',${e.id},'desc',this.value)">
       <input class="f-amt" type="number" placeholder="0" value="${e.amt||''}"
-        oninput="updateEntry('${sec}',${e.id},'amt',this.value)">
+        oninput="updateEntry('${sec}',${e.id},'amt',this.value)" onchange="updateEntry('${sec}',${e.id},'amt',this.value)">
       <button class="del-btn" onclick="delEntry('${sec}',${e.id})">×</button>`;
     c.appendChild(row);
   });
