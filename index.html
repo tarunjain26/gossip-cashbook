@@ -148,6 +148,8 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 }
 .btn-save:hover{background:var(--orange2)}
 .btn-save:disabled{opacity:0.4;cursor:not-allowed}
+.btn-save.unsaved{animation:savePulse 2s ease-in-out infinite}
+@keyframes savePulse{0%,100%{box-shadow:0 0 0 0 rgba(232,97,58,0.4)}50%{box-shadow:0 0 0 6px rgba(232,97,58,0)}}
 
 /* edit banner */
 .edit-banner{
@@ -897,6 +899,7 @@ window.showScreen = function(id) {
 
 window.selectOutlet = function(outlet) {
   currentOutlet = outlet;
+  localStorage.setItem('gossip_outlet', outlet);
   document.getElementById('outlet-label').textContent = OUTLET_NAMES[outlet];
   initCashbook();
   showScreen('screen-cashbook');
@@ -942,6 +945,7 @@ window.verifyPin = function() {
 async function initCashbook() {
   const today = new Date();
   currentDate = today.toISOString().split('T')[0];
+  localStorage.setItem('gossip_date', currentDate);
   document.getElementById('sel-date').value = currentDate;
   setLedgerDate(today);
   setEditBanner(false);
@@ -978,6 +982,7 @@ window.onDateChange = async function() {
   }
 
   currentDate = newDate;
+  localStorage.setItem('gossip_date', newDate);
   lastSavedPayload = null;
   setLedgerDate(new Date(newDate + 'T00:00:00'));
   setStatus('loading');
@@ -1102,18 +1107,19 @@ function setStatus(state, msg) {
   const text = document.getElementById('status-text');
   const btn  = document.getElementById('btn-save');
   const states = {
-    saved:     { dot:'saved',   text:'Saved to cloud ✓',              btn:false },
-    autosaved: { dot:'saved',   text:'Auto-saved ✓',                  btn:false },
-    saving:    { dot:'saving',  text:'Saving...',                     btn:true  },
-    loading:   { dot:'loading', text:'Loading data...',               btn:true  },
-    unsaved:   { dot:'unsaved', text:'Unsaved changes',               btn:false },
-    error:     { dot:'error',   text:msg||'Save failed — try again',  btn:false },
-    empty:     { dot:'unsaved', text:'No data saved for this date',   btn:false },
+    saved:     { dot:'saved',   text:'Saved to cloud ✓',              btn:false, pulse:false },
+    autosaved: { dot:'saved',   text:'Auto-saved ✓',                  btn:false, pulse:false },
+    saving:    { dot:'saving',  text:'Saving...',                     btn:true,  pulse:false },
+    loading:   { dot:'loading', text:'Loading data...',               btn:true,  pulse:false },
+    unsaved:   { dot:'unsaved', text:'Unsaved changes — tap Save',    btn:false, pulse:true  },
+    error:     { dot:'error',   text:msg||'Save failed — try again',  btn:false, pulse:true  },
+    empty:     { dot:'unsaved', text:'No data saved for this date',   btn:false, pulse:false },
   };
   const s = states[state] || states.unsaved;
-  dot.className  = 'status-dot ' + s.dot;
+  dot.className    = 'status-dot ' + s.dot;
   text.textContent = s.text;
-  btn.disabled   = s.btn;
+  btn.disabled     = s.btn;
+  btn.classList.toggle('unsaved', s.pulse);
 }
 
 // ══════════════════════════════════════════════════════
@@ -1235,9 +1241,18 @@ function calc() {
   el.textContent = fmt(closing);
   el.className = 'bal-rv ' + (closing >= 0 ? 'c-pos' : 'c-neg');
 
-  calcCashCount();
   renderLedger({ob, cafeSales, online, cardUpi, duesIn, ownerAmt, advIn, miscIn, raw, sal, petty, duesOut, advAdj, bankDep, closing});
-  setStatus('unsaved');
+  // Only update cash count expected value — don't recalculate full cash count
+  document.getElementById('cc-expected').textContent = fmt(closing);
+  updateStatusUnsaved();
+}
+
+let statusDebounce = null;
+function updateStatusUnsaved() {
+  if (statusDebounce) clearTimeout(statusDebounce);
+  statusDebounce = setTimeout(() => {
+    if (!isLoadedData) setStatus('unsaved');
+  }, 300);
 }
 
 // ══════════════════════════════════════════════════════
@@ -1814,9 +1829,27 @@ function calcExp(data) {
 function sumEntries(arr) { return arr ? arr.reduce((a,e)=>a+(parseFloat(e.amt)||0),0) : 0; }
 function addCat(obj, key, val) { obj[key] = (obj[key]||0)+val; }
 
-// Warmup on load
+// Restore session on page load / refresh
 window.addEventListener('load', () => {
+  // Warmup Firebase connection
   getDoc(doc(db, 'daily_entries', 'warmup')).catch(()=>{});
+
+  // Restore outlet session if staff refreshed the page
+  const savedOutlet = localStorage.getItem('gossip_outlet');
+  const savedDate   = localStorage.getItem('gossip_date');
+  if (savedOutlet && OUTLET_NAMES[savedOutlet]) {
+    currentOutlet = savedOutlet;
+    document.getElementById('outlet-label').textContent = OUTLET_NAMES[savedOutlet];
+    // Restore date if saved
+    if (savedDate) {
+      currentDate = savedDate;
+      document.getElementById('sel-date').value = savedDate;
+      const d = new Date(savedDate + 'T00:00:00');
+      setLedgerDate(d);
+    }
+    initCashbook();
+    showScreen('screen-cashbook');
+  }
 });
 
 </script>
