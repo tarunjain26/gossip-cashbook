@@ -430,6 +430,48 @@ input.f-sub{
 }
 .btn-export:hover{background:var(--green);color:#fff}
 
+.an-section-label{font-size:11px;font-weight:500;color:var(--text3);text-transform:uppercase;letter-spacing:0.06em;margin:16px 0 8px}
+.an-grid4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:10px}
+.an-grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-bottom:10px}
+.an-grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.an-mcard{background:var(--bg3);border-radius:var(--radius);padding:12px 14px}
+.an-lbl{font-size:12px;color:var(--text2);margin-bottom:4px}
+.an-val{font-size:22px;font-weight:500;color:var(--text);font-family:'Fraunces',serif;font-weight:300}
+.an-sub{font-size:11px;color:var(--text3);margin-top:3px}
+.an-sub.up{color:var(--green)}.an-sub.dn{color:var(--red)}
+.an-chart-card{background:var(--bg2);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:14px}
+.an-chart-head{font-size:11px;font-weight:500;color:var(--text2);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:10px}
+.an-outlet-row{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.an-outlet-lbl{font-size:12px;color:var(--text2);width:90px;flex-shrink:0}
+.an-bar-track{flex:1;background:var(--bg3);border-radius:3px;height:8px;overflow:hidden}
+.an-bar-fill{height:8px;border-radius:3px;transition:width 0.5s ease}
+.an-bar-val{font-size:12px;font-weight:500;color:var(--text);width:80px;text-align:right;flex-shrink:0}
+.an-ratio-row{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.an-ratio-lbl{font-size:12px;color:var(--text2);width:90px;flex-shrink:0}
+.an-ratio-bar{flex:1;display:flex;border-radius:4px;overflow:hidden;height:20px}
+.an-ratio-seg{display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:500}
+.an-legend{display:flex;gap:14px;margin-top:10px;font-size:12px;color:var(--text2)}
+.an-dot{width:10px;height:10px;border-radius:2px;display:inline-block;margin-right:4px}
+.an-big-val{font-size:30px;font-weight:300;font-family:'Fraunces',serif;margin-bottom:4px}
+.an-progress-track{background:var(--bg3);border-radius:4px;height:8px;overflow:hidden;margin-bottom:6px}
+.an-progress-fill{height:8px;border-radius:4px;transition:width 0.5s ease}
+.an-range-hint{font-size:11px;color:var(--text3)}
+.an-cat-row{display:flex;align-items:center;gap:8px;margin-bottom:7px}
+.an-cat-lbl{font-size:11px;color:var(--text2);width:130px;flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.an-cat-track{flex:1;background:var(--bg3);border-radius:3px;height:6px;overflow:hidden}
+.an-cat-fill{height:6px;border-radius:3px;transition:width 0.5s ease}
+.an-cat-val{font-size:11px;color:var(--text2);width:70px;text-align:right;flex-shrink:0}
+.an-insight-row{display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-bottom:0.5px solid var(--border)}
+.an-insight-row:last-child{border-bottom:none;padding-bottom:0}
+.an-insight-icon{width:28px;height:28px;border-radius:var(--radius);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:13px;font-weight:500}
+.an-insight-icon.warn{background:var(--gold-light);color:var(--gold)}
+.an-insight-icon.good{background:var(--green-light);color:var(--green)}
+.an-insight-icon.info{background:var(--orange-light);color:var(--orange)}
+.an-insight-icon.bad{background:var(--red-light);color:var(--red)}
+.an-insight-body{font-size:13px;color:var(--text);line-height:1.5}
+.an-insight-body b{font-weight:500}
+.an-insight-hint{font-size:11px;color:var(--text3);margin-top:2px}
+
 /* responsive */
 @media(max-width:640px){
   .two-col{grid-template-columns:1fr}
@@ -709,6 +751,7 @@ input.f-sub{
         <button class="dash-tab active" onclick="showDashTab('today')">Today</button>
         <button class="dash-tab" onclick="showDashTab('monthly')">Monthly</button>
         <button class="dash-tab" onclick="showDashTab('reports')">Reports</button>
+        <button class="dash-tab" onclick="showDashTab('analytics')">Analytics</button>
         <button class="dash-back" onclick="showScreen('screen-select')">← Back</button>
       </div>
     </div>
@@ -826,6 +869,99 @@ input.f-sub{
           </tbody>
         </table>
         </div>
+      </div>
+    </div>
+
+    <!-- ANALYTICS -->
+    <div class="dash-section" id="dash-analytics">
+      <div class="dash-controls">
+        <label>Month</label>
+        <select id="an-month"></select>
+        <label>Year</label>
+        <select id="an-year"></select>
+        <button class="btn-refresh" onclick="loadAnalytics()">Load Analytics</button>
+        <span class="dash-status" id="an-status"></span>
+      </div>
+
+      <!-- Morning snapshot -->
+      <div class="an-section-label">Snapshot</div>
+      <div class="an-grid4" id="an-snapshot">
+        <div class="an-mcard"><div class="an-lbl">Total Revenue</div><div class="an-val" id="an-rev">—</div><div class="an-sub" id="an-rev-sub"></div></div>
+        <div class="an-mcard"><div class="an-lbl">Total Expenses</div><div class="an-val" id="an-exp">—</div><div class="an-sub" id="an-exp-sub"></div></div>
+        <div class="an-mcard"><div class="an-lbl">Net Profit</div><div class="an-val" id="an-profit">—</div><div class="an-sub" id="an-profit-sub"></div></div>
+        <div class="an-mcard"><div class="an-lbl">Days Recorded</div><div class="an-val" id="an-days">—</div><div class="an-sub" id="an-days-sub"></div></div>
+      </div>
+      <div class="an-grid3">
+        <div class="an-mcard"><div class="an-lbl">Outstanding Dues</div><div class="an-val" id="an-dues">—</div><div class="an-sub">Credit given, not yet collected</div></div>
+        <div class="an-mcard"><div class="an-lbl">Pending Advances</div><div class="an-val" id="an-adv">—</div><div class="an-sub">Received, not yet adjusted</div></div>
+        <div class="an-mcard"><div class="an-lbl">Cash Discrepancy</div><div class="an-val" id="an-diff">—</div><div class="an-sub" id="an-diff-sub">Across all outlets</div></div>
+      </div>
+
+      <!-- Outlet comparison -->
+      <div class="an-section-label">Outlet comparison</div>
+      <div class="an-chart-card" style="margin-bottom:10px">
+        <div class="an-chart-head">Revenue by outlet</div>
+        <div id="an-outlet-bars">—</div>
+      </div>
+
+      <!-- Payment split -->
+      <div class="an-section-label">Cash vs digital payment split</div>
+      <div class="an-chart-card" style="margin-bottom:10px">
+        <div class="an-chart-head">How customers are paying — by outlet</div>
+        <div id="an-payment-split">—</div>
+        <div class="an-legend">
+          <span><span class="an-dot" style="background:#1a7a4a"></span>Cash</span>
+          <span><span class="an-dot" style="background:#185FA5"></span>Card / UPI</span>
+          <span><span class="an-dot" style="background:#BA7517"></span>Online delivery</span>
+        </div>
+      </div>
+
+      <!-- Cost ratios -->
+      <div class="an-section-label">Cost health</div>
+      <div class="an-grid2" style="margin-bottom:10px">
+        <div class="an-chart-card">
+          <div class="an-chart-head">Raw materials % of revenue</div>
+          <div class="an-big-val" id="an-rm-pct">—</div>
+          <div class="an-sub" style="margin-bottom:8px">Target: 25–30%</div>
+          <div class="an-progress-track"><div class="an-progress-fill" id="an-rm-bar" style="width:0%"></div></div>
+          <div class="an-range-hint" id="an-rm-hint"></div>
+        </div>
+        <div class="an-chart-card">
+          <div class="an-chart-head">Staff wages % of revenue</div>
+          <div class="an-big-val" id="an-sal-pct">—</div>
+          <div class="an-sub" style="margin-bottom:8px">Target: 20–28%</div>
+          <div class="an-progress-track"><div class="an-progress-fill" id="an-sal-bar" style="width:0%"></div></div>
+          <div class="an-range-hint" id="an-sal-hint"></div>
+        </div>
+      </div>
+
+      <!-- Day of week -->
+      <div class="an-section-label">Best days of the week</div>
+      <div class="an-chart-card" style="margin-bottom:10px">
+        <div class="an-chart-head">Average daily sales by weekday — all outlets</div>
+        <div id="an-weekday-chart" style="display:flex;gap:6px;align-items:flex-end;height:90px;margin-top:8px"></div>
+        <div style="display:flex;gap:6px;margin-top:4px">
+          <div style="flex:1;font-size:10px;color:var(--color-text-secondary);text-align:center">Mon</div>
+          <div style="flex:1;font-size:10px;color:var(--color-text-secondary);text-align:center">Tue</div>
+          <div style="flex:1;font-size:10px;color:var(--color-text-secondary);text-align:center">Wed</div>
+          <div style="flex:1;font-size:10px;color:var(--color-text-secondary);text-align:center">Thu</div>
+          <div style="flex:1;font-size:10px;color:var(--color-text-secondary);text-align:center">Fri</div>
+          <div style="flex:1;font-size:10px;color:var(--color-text-secondary);text-align:center">Sat</div>
+          <div style="flex:1;font-size:10px;color:var(--color-text-secondary);text-align:center">Sun</div>
+        </div>
+      </div>
+
+      <!-- Category breakdown chart -->
+      <div class="an-section-label">Where the money goes</div>
+      <div class="an-grid2" style="margin-bottom:10px">
+        <div class="an-chart-card"><div class="an-chart-head">Income sources</div><div id="an-inc-bars"></div></div>
+        <div class="an-chart-card"><div class="an-chart-head">Expense categories</div><div id="an-exp-bars"></div></div>
+      </div>
+
+      <!-- Smart insights -->
+      <div class="an-section-label">Smart insights</div>
+      <div class="an-chart-card">
+        <div id="an-insights"><div class="dash-loading">Load analytics to see insights</div></div>
       </div>
     </div>
 
@@ -1470,19 +1606,24 @@ function initDashboard() {
   document.getElementById('dash-date').value = today;
 
   const now = new Date();
-  const mSel = document.getElementById('dash-month');
-  const ySel = document.getElementById('dash-year');
-  mSel.innerHTML = MONTHS.map((m,i) => `<option value="${i+1}" ${i===now.getMonth()?'selected':''}>${m}</option>`).join('');
-  ySel.innerHTML = [now.getFullYear()-1, now.getFullYear()].map(y => `<option value="${y}" ${y===now.getFullYear()?'selected':''}>${y}</option>`).join('');
+  ['dash-month','an-month'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.innerHTML = MONTHS.map((m,i) => `<option value="${i+1}" ${i===now.getMonth()?'selected':''}>${m}</option>`).join('');
+  });
+  ['dash-year','an-year'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.innerHTML = [now.getFullYear()-1, now.getFullYear()].map(y => `<option value="${y}" ${y===now.getFullYear()?'selected':''}>${y}</option>`).join('');
+  });
 
   loadDashboard();
 }
 
 window.showDashTab = function(tab) {
-  document.querySelectorAll('.dash-tab').forEach((t,i) => t.classList.toggle('active', ['today','monthly','reports'][i]===tab));
+  document.querySelectorAll('.dash-tab').forEach((t,i) => t.classList.toggle('active', ['today','monthly','reports','analytics'][i]===tab));
   document.querySelectorAll('.dash-section').forEach(s => s.classList.remove('active'));
   document.getElementById('dash-'+tab).classList.add('active');
   if (tab === 'reports') initReports();
+  if (tab === 'analytics') initAnalytics();
 };
 
 window.loadDashboard = async function() {
@@ -1826,6 +1967,267 @@ function calcExp(data) {
   return sumEntries(data.entries?.raw)+sumEntries(data.entries?.sal)+
     sumEntries(data.entries?.petty)+sumEntries(data.entries?.duesOut)+
     sumEntries(data.entries?.advAdj)+(data.bankDeposit||0);
+}
+
+// ══════════════════════════════════════════════════════
+//  ANALYTICS
+// ══════════════════════════════════════════════════════
+function initAnalytics() {
+  if (document.getElementById('an-month').options.length) return;
+  const now = new Date();
+  const mSel = document.getElementById('an-month');
+  const ySel = document.getElementById('an-year');
+  mSel.innerHTML = MONTHS.map((m,i) => `<option value="${i+1}" ${i===now.getMonth()?'selected':''}>${m}</option>`).join('');
+  ySel.innerHTML = [now.getFullYear()-1, now.getFullYear()].map(y => `<option value="${y}" ${y===now.getFullYear()?'selected':''}>${y}</option>`).join('');
+}
+
+window.loadAnalytics = async function() {
+  const month  = parseInt(document.getElementById('an-month').value);
+  const year   = parseInt(document.getElementById('an-year').value);
+  const prefix = year + '-' + String(month).padStart(2,'0');
+  document.getElementById('an-status').textContent = 'Loading...';
+
+  try {
+    const q = query(collection(db, 'daily_entries'),
+      where('date', '>=', prefix+'-01'),
+      where('date', '<=', prefix+'-31'));
+    const snap = await getDocs(q);
+    const rows = [];
+    snap.forEach(d => rows.push(d.data()));
+    rows.sort((a,b) => a.date.localeCompare(b.date));
+    renderAnalytics(rows, month, year);
+    document.getElementById('an-status').textContent = rows.length + ' days loaded';
+  } catch(err) {
+    console.error(err);
+    document.getElementById('an-status').textContent = 'Error loading data';
+  }
+};
+
+function renderAnalytics(rows, month, year) {
+  if (!rows.length) {
+    document.getElementById('an-status').textContent = 'No data for this period';
+    return;
+  }
+
+  // ── Totals ──
+  let tRev=0, tExp=0, tDuesOut=0, tAdvIn=0, tDiff=0, diffCount=0;
+  let tCafe=0, tOnline=0, tCard=0;
+  let tRaw=0, tSal=0, tPetty=0;
+  const outletRev={Talwandi:0,Aerodrome:0,RN1:0};
+  const outletExp={Talwandi:0,Aerodrome:0,RN1:0};
+  const outletCafe={Talwandi:0,Aerodrome:0,RN1:0};
+  const outletOnline={Talwandi:0,Aerodrome:0,RN1:0};
+  const outletCard={Talwandi:0,Aerodrome:0,RN1:0};
+  const weekdayRev={0:0,1:0,2:0,3:0,4:0,5:0,6:0};
+  const weekdayCount={0:0,1:0,2:0,3:0,4:0,5:0,6:0};
+  const catInc={}, catExp={};
+
+  rows.forEach(d => {
+    const inc = calcInc(d), exp = calcExp(d);
+    tRev+=inc; tExp+=exp;
+    tDuesOut += sumEntries(d.entries?.duesOut);
+    tAdvIn   += sumEntries(d.entries?.advIn);
+    tCafe    += (d.cafeSales||0);
+    tOnline  += (d.onlineSales||0);
+    tCard    += (d.cardUpi||0);
+    tRaw     += sumEntries(d.entries?.raw);
+    tSal     += sumEntries(d.entries?.sal);
+    tPetty   += sumEntries(d.entries?.petty);
+    if (d.cashDifference !== undefined) { tDiff += d.cashDifference; diffCount++; }
+    if (outletRev[d.outlet] !== undefined) {
+      outletRev[d.outlet]    += inc;
+      outletExp[d.outlet]    += exp;
+      outletCafe[d.outlet]   += (d.cafeSales||0);
+      outletOnline[d.outlet] += (d.onlineSales||0);
+      outletCard[d.outlet]   += (d.cardUpi||0);
+    }
+    const dow = new Date(d.date+'T00:00:00').getDay();
+    weekdayRev[dow]   += inc;
+    weekdayCount[dow] += 1;
+    addCat(catInc,'Cafe Sales',       d.cafeSales||0);
+    addCat(catInc,'Online Sales',     d.onlineSales||0);
+    addCat(catInc,'Card / UPI',       d.cardUpi||0);
+    addCat(catInc,'Dues Collected',   sumEntries(d.entries?.duesIn));
+    addCat(catInc,"Owner's Amount",   sumEntries(d.entries?.owner));
+    addCat(catInc,'Advance Received', sumEntries(d.entries?.advIn));
+    addCat(catInc,'Misc Received',    sumEntries(d.entries?.miscIn));
+    addCat(catExp,'Raw Materials',    sumEntries(d.entries?.raw));
+    addCat(catExp,'Staff Wages',      sumEntries(d.entries?.sal));
+    addCat(catExp,'Petty Cash',       sumEntries(d.entries?.petty));
+    addCat(catExp,'Credit Given',     sumEntries(d.entries?.duesOut));
+    addCat(catExp,'Adv Adjusted',     sumEntries(d.entries?.advAdj));
+    addCat(catExp,'Bank Deposit',     d.bankDeposit||0);
+  });
+
+  const profit = tRev - tExp;
+
+  // ── Snapshot cards ──
+  document.getElementById('an-rev').textContent    = fmt(tRev);
+  document.getElementById('an-exp').textContent    = fmt(tExp);
+  const pEl = document.getElementById('an-profit');
+  pEl.textContent = fmt(profit);
+  pEl.style.color = profit>=0?'var(--green)':'var(--red)';
+  document.getElementById('an-profit-sub').textContent = profit>=0 ? 'Net profit' : 'Net loss';
+  document.getElementById('an-profit-sub').className = 'an-sub ' + (profit>=0?'up':'dn');
+  document.getElementById('an-days').textContent   = rows.length;
+  document.getElementById('an-days-sub').textContent = MONTHS[month-1] + ' ' + year;
+  document.getElementById('an-dues').textContent   = fmt(tDuesOut);
+  document.getElementById('an-adv').textContent    = fmt(tAdvIn);
+  const diffEl = document.getElementById('an-diff');
+  diffEl.textContent = diffCount ? fmt(Math.abs(tDiff)) : '—';
+  diffEl.style.color = tDiff===0?'var(--green)':tDiff>0?'var(--red)':'var(--gold)';
+  document.getElementById('an-diff-sub').textContent = tDiff>0?'Cash short overall':tDiff<0?'Cash over overall':'Perfectly balanced';
+
+  // ── Outlet bars ──
+  const maxRev = Math.max(...Object.values(outletRev), 1);
+  const outletColors = {Talwandi:'#1a7a4a', Aerodrome:'#185FA5', RN1:'#BA7517'};
+  const outletLabels = {Talwandi:'Talwandi', Aerodrome:'Aerodrome', RN1:'R N 1'};
+  document.getElementById('an-outlet-bars').innerHTML = Object.keys(outletRev).map(o => `
+    <div class="an-outlet-row">
+      <div class="an-outlet-lbl">${outletLabels[o]}</div>
+      <div class="an-bar-track"><div class="an-bar-fill" style="width:${Math.round(outletRev[o]/maxRev*100)}%;background:${outletColors[o]}"></div></div>
+      <div class="an-bar-val">${fmt(outletRev[o])}</div>
+    </div>
+    <div class="an-outlet-row" style="margin-top:-4px;margin-bottom:10px">
+      <div class="an-outlet-lbl" style="font-size:10px;color:var(--text3)">Profit</div>
+      <div class="an-bar-track"><div class="an-bar-fill" style="width:${Math.round(Math.max(0,(outletRev[o]-outletExp[o]))/maxRev*100)}%;background:${outletColors[o]};opacity:0.4"></div></div>
+      <div class="an-bar-val" style="color:${outletRev[o]-outletExp[o]>=0?'var(--green)':'var(--red)'};font-size:11px">${fmt(outletRev[o]-outletExp[o])}</div>
+    </div>`).join('');
+
+  // ── Payment split ──
+  document.getElementById('an-payment-split').innerHTML = Object.keys(outletRev).map(o => {
+    const total = outletCafe[o] || 1;
+    const cashPct   = Math.round((outletCafe[o]-outletOnline[o]-outletCard[o])/total*100);
+    const cardPct   = Math.round(outletCard[o]/total*100);
+    const onlinePct = Math.round(outletOnline[o]/total*100);
+    const adjCash   = Math.max(0, 100-cardPct-onlinePct);
+    return `<div class="an-ratio-row">
+      <div class="an-ratio-lbl">${outletLabels[o]}</div>
+      <div class="an-ratio-bar">
+        <div class="an-ratio-seg" style="width:${adjCash}%;background:#1a7a4a;color:#e8f5ee">${adjCash>12?adjCash+'%':''}</div>
+        <div class="an-ratio-seg" style="width:${cardPct}%;background:#185FA5;color:#E6F1FB">${cardPct>12?cardPct+'%':''}</div>
+        <div class="an-ratio-seg" style="width:${onlinePct}%;background:#BA7517;color:#FAEEDA">${onlinePct>12?onlinePct+'%':''}</div>
+      </div>
+    </div>`;
+  }).join('');
+
+  // ── Cost ratios ──
+  const rmPct  = tRev ? Math.round(tRaw/tRev*100) : 0;
+  const salPct = tRev ? Math.round(tSal/tRev*100) : 0;
+  const rmColor  = rmPct>30?'var(--red)':rmPct<25?'var(--gold)':'var(--green)';
+  const salColor = salPct>28?'var(--red)':salPct<20?'var(--gold)':'var(--green)';
+  document.getElementById('an-rm-pct').textContent  = rmPct+'%';
+  document.getElementById('an-rm-pct').style.color  = rmColor;
+  document.getElementById('an-rm-bar').style.width  = Math.min(rmPct*2,100)+'%';
+  document.getElementById('an-rm-bar').style.background = rmColor;
+  document.getElementById('an-rm-hint').textContent  = rmPct>30?'Above target — review supplier costs':rmPct<25?'Below target — check if data complete':'Within healthy range';
+  document.getElementById('an-rm-hint').style.color  = rmColor;
+  document.getElementById('an-sal-pct').textContent = salPct+'%';
+  document.getElementById('an-sal-pct').style.color = salColor;
+  document.getElementById('an-sal-bar').style.width = Math.min(salPct*2,100)+'%';
+  document.getElementById('an-sal-bar').style.background = salColor;
+  document.getElementById('an-sal-hint').textContent = salPct>28?'Above target — review staffing':salPct<20?'Below target — check wages data':'Within healthy range';
+  document.getElementById('an-sal-hint').style.color = salColor;
+
+  // ── Weekday chart ──
+  // JS getDay: 0=Sun,1=Mon,...,6=Sat — remap to Mon-Sun display
+  const dowOrder = [1,2,3,4,5,6,0];
+  const avgs = dowOrder.map(d => weekdayCount[d] ? Math.round(weekdayRev[d]/weekdayCount[d]) : 0);
+  const maxAvg = Math.max(...avgs, 1);
+  const bestDow = avgs.indexOf(Math.max(...avgs));
+  document.getElementById('an-weekday-chart').innerHTML = avgs.map((v,i) => {
+    const h = Math.round(v/maxAvg*80);
+    const isBest = i===bestDow;
+    return `<div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:3px">
+      <div style="font-size:10px;color:${isBest?'var(--green)':'var(--text3)'};font-weight:${isBest?500:400}">${v?fmt(v):''}</div>
+      <div style="width:100%;background:${isBest?'var(--green)':'var(--orange)'};border-radius:3px 3px 0 0;height:${h}px;opacity:${isBest?1:0.6}"></div>
+    </div>`;
+  }).join('');
+
+  // ── Category bars ──
+  const renderAnBars = (elId, data, color) => {
+    const el  = document.getElementById(elId);
+    const max = Math.max(...Object.values(data), 1);
+    const sorted = Object.entries(data).filter(([,v])=>v>0).sort((a,b)=>b[1]-a[1]);
+    if (!sorted.length) { el.innerHTML='<div style="font-size:12px;color:var(--text3);padding:8px 0">No data</div>'; return; }
+    el.innerHTML = sorted.map(([cat,val]) => `
+      <div class="an-cat-row">
+        <span class="an-cat-lbl">${cat}</span>
+        <div class="an-cat-track"><div class="an-cat-fill" style="width:${Math.round(val/max*100)}%;background:${color}"></div></div>
+        <span class="an-cat-val">${fmt(val)}</span>
+      </div>`).join('');
+  };
+  renderAnBars('an-inc-bars', catInc, 'var(--green)');
+  renderAnBars('an-exp-bars', catExp, 'var(--orange)');
+
+  // ── Smart insights ──
+  const insights = [];
+  const profitMargin = tRev ? Math.round(profit/tRev*100) : 0;
+
+  if (rmPct > 30) insights.push({type:'warn', icon:'!',
+    text:`Raw material cost is <b>${rmPct}%</b> of revenue — above your 25–30% target`,
+    hint:`Currently spending ${fmt(tRaw)} on raw materials. Review supplier pricing or portion sizes.`});
+  else if (rmPct <= 30 && rmPct >= 25) insights.push({type:'good', icon:'✓',
+    text:`Raw material cost is <b>${rmPct}%</b> of revenue — within healthy range`,
+    hint:`Spending ${fmt(tRaw)} on raw materials this month.`});
+
+  if (salPct > 28) insights.push({type:'warn', icon:'!',
+    text:`Staff wages are <b>${salPct}%</b> of revenue — above your 20–28% target`,
+    hint:`Review staffing levels on slow days. Weekday vs weekend scheduling could help.`});
+  else insights.push({type:'good', icon:'✓',
+    text:`Staff wages at <b>${salPct}%</b> of revenue — within healthy range`,
+    hint:`Total wages this month: ${fmt(tSal)}.`});
+
+  // Best outlet
+  const bestOutlet = Object.keys(outletRev).reduce((a,b) => outletRev[a]>outletRev[b]?a:b);
+  const bestProfit = outletRev[bestOutlet] - outletExp[bestOutlet];
+  const bestMargin = outletRev[bestOutlet] ? Math.round(bestProfit/outletRev[bestOutlet]*100) : 0;
+  insights.push({type:'info', icon:'↑',
+    text:`<b>${outletLabels[bestOutlet]}</b> is your top outlet — ${fmt(outletRev[bestOutlet])} revenue, ${bestMargin}% margin`,
+    hint:`Compare operations at this outlet to improve others.`});
+
+  // Best day
+  const dayNames = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+  insights.push({type:'info', icon:'↑',
+    text:`<b>${dayNames[bestDow]}</b> is your best day — avg ${fmt(avgs[bestDow])} per day`,
+    hint:`Fri–Sun typically drives 50–55% of weekly revenue for F&B. Plan promotions for slow weekdays.`});
+
+  // Dues warning
+  if (tDuesOut > 5000) insights.push({type:'warn', icon:'₹',
+    text:`<b>${fmt(tDuesOut)}</b> in credit given to customers this month`,
+    hint:`Track who owes what and follow up regularly to avoid dues accumulating.`});
+
+  // Cash discrepancy
+  if (diffCount > 0 && Math.abs(tDiff) > 500) insights.push({type:'bad', icon:'!',
+    text:`Cash discrepancy of <b>${fmt(Math.abs(tDiff))}</b> across ${diffCount} days`,
+    hint:tDiff>0?'Cash is consistently short — brief staff on counting procedures.':'Cash is over — check if all digital payments are being recorded.'});
+  else if (diffCount > 0) insights.push({type:'good', icon:'✓',
+    text:`Cash counts are accurate — only <b>${fmt(Math.abs(tDiff))}</b> total discrepancy`,
+    hint:`Good discipline on cash handling across ${diffCount} days counted.`});
+
+  // Profit margin
+  if (profitMargin < 15) insights.push({type:'bad', icon:'!',
+    text:`Profit margin is only <b>${profitMargin}%</b> this month`,
+    hint:`For a healthy F&B business aim for 15–25% net margin. Review your biggest expense categories.`});
+  else insights.push({type:'good', icon:'✓',
+    text:`Profit margin is <b>${profitMargin}%</b> — healthy for F&B`,
+    hint:`Net profit: ${fmt(profit)} on revenue of ${fmt(tRev)}.`});
+
+  const typeColors = {
+    good: 'background:var(--green-light);color:var(--green)',
+    warn: 'background:var(--gold-light);color:var(--gold)',
+    info: 'background:var(--orange-light);color:var(--orange)',
+    bad:  'background:var(--red-light);color:var(--red)'
+  };
+
+  document.getElementById('an-insights').innerHTML = insights.map(ins => `
+    <div class="an-insight-row">
+      <div class="an-insight-icon" style="${typeColors[ins.type]}">${ins.icon}</div>
+      <div>
+        <div class="an-insight-body">${ins.text}</div>
+        <div class="an-insight-hint">${ins.hint}</div>
+      </div>
+    </div>`).join('');
 }
 
 // ══════════════════════════════════════════════════════
