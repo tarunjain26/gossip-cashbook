@@ -2,7 +2,17 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Gossip!">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#e8613a">
+<meta name="description" content="Daily cash book for Gossip! Artisan Bakery & Cafe">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
 <title>Gossip! — Cash Book</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;1,9..144,400&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
@@ -18,7 +28,11 @@
   --gold:#c9943a;--gold-light:#FDF3E3;
   --radius:10px;--radius-lg:14px;--radius-xl:20px;
 }
-body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;
+  padding-top:env(safe-area-inset-top);
+  padding-bottom:env(safe-area-inset-bottom);
+  padding-left:env(safe-area-inset-left);
+  padding-right:env(safe-area-inset-right);}
 
 /* ── SCREENS ── */
 .screen{display:none;min-height:100vh}
@@ -966,6 +980,31 @@ input.f-sub{
     </div>
 
   </div>
+</div>
+
+<!-- PWA INSTALL BANNER -->
+<div id="install-banner" style="display:none;position:fixed;bottom:80px;left:50%;transform:translateX(-50%);
+  background:#1a1a1a;color:#f0ebe3;border-radius:14px;padding:12px 18px;
+  display:flex;align-items:center;gap:12px;box-shadow:0 4px 24px rgba(0,0,0,0.3);
+  z-index:999;max-width:340px;width:90%;font-size:13px;">
+  <img src="icon-192.png" style="width:36px;height:36px;border-radius:8px;flex-shrink:0">
+  <div style="flex:1">
+    <div style="font-weight:500;margin-bottom:2px">Install Gossip! Cash Book</div>
+    <div style="font-size:11px;color:#888">Add to home screen for quick access</div>
+  </div>
+  <button onclick="installApp()" style="background:var(--orange);color:#fff;border:none;border-radius:8px;
+    padding:7px 12px;font-size:12px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;white-space:nowrap">
+    Install
+  </button>
+  <button onclick="dismissInstall()" style="background:transparent;border:none;color:#888;cursor:pointer;
+    font-size:18px;padding:0 4px;line-height:1">×</button>
+</div>
+
+<!-- OFFLINE TOAST -->
+<div id="offline-toast" style="display:none;position:fixed;bottom:20px;left:50%;transform:translateX(-50%);
+  background:#1a1a1a;color:#f0ebe3;border-radius:10px;padding:10px 18px;
+  font-size:12px;z-index:1000;white-space:nowrap;box-shadow:0 4px 16px rgba(0,0,0,0.3)">
+  You are offline — data will sync when reconnected
 </div>
 
 <script type="module">
@@ -2259,6 +2298,57 @@ window.addEventListener('load', () => {
   }
 });
 
+</script>
+<script>
+// PWA — Service Worker + Install Prompt + Offline Detection
+(function() {
+  // Register service worker
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function() {
+      navigator.serviceWorker.register('sw.js')
+        .then(function(reg) { console.log('SW registered:', reg.scope); })
+        .catch(function(err) { console.log('SW error:', err); });
+    });
+  }
+
+  // Install prompt
+  var deferredPrompt = null;
+  window.addEventListener('beforeinstallprompt', function(e) {
+    e.preventDefault();
+    deferredPrompt = e;
+    var dismissed = localStorage.getItem('gossip_install_dismissed');
+    if (!dismissed) {
+      setTimeout(function() {
+        var banner = document.getElementById('install-banner');
+        if (banner) banner.style.display = 'flex';
+      }, 30000);
+    }
+  });
+
+  window.installApp = function() {
+    if (!deferredPrompt) return;
+    deferredPrompt.prompt();
+    deferredPrompt.userChoice.then(function(result) {
+      document.getElementById('install-banner').style.display = 'none';
+      deferredPrompt = null;
+    });
+  };
+
+  window.dismissInstall = function() {
+    document.getElementById('install-banner').style.display = 'none';
+    localStorage.setItem('gossip_install_dismissed', '1');
+  };
+
+  // Offline toast
+  window.addEventListener('online',  function() { document.getElementById('offline-toast').style.display = 'none'; });
+  window.addEventListener('offline', function() { document.getElementById('offline-toast').style.display = 'block'; });
+
+  // App installed
+  window.addEventListener('appinstalled', function() {
+    document.getElementById('install-banner').style.display = 'none';
+    console.log('Gossip! Cash Book installed successfully');
+  });
+})();
 </script>
 </body>
 </html>
