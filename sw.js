@@ -1,13 +1,15 @@
-const CACHE = 'gossip-cashbook-v1';
-const OFFLINE_URLS = [
-  '/',
-  '/index.html',
-  'https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;1,9..144,400&family=DM+Sans:wght@400;500&display=swap'
-];
+const CACHE = 'gossip-cashbook-v2';
+const BASE = '/gossip-cashbook/';
 
 self.addEventListener('install', e => {
   e.waitUntil(
-    caches.open(CACHE).then(cache => cache.addAll(['/index.html']))
+    caches.open(CACHE)
+      .then(cache => cache.addAll([
+        BASE,
+        BASE + 'index.html',
+        BASE + 'icon-192.png',
+        BASE + 'icon-512.png'
+      ]))
       .then(() => self.skipWaiting())
   );
 });
@@ -21,9 +23,10 @@ self.addEventListener('activate', e => {
 });
 
 self.addEventListener('fetch', e => {
-  // Firebase calls — always network first
+  // Firebase calls — always network, never cache
   if (e.request.url.includes('firestore.googleapis.com') ||
       e.request.url.includes('firebase') ||
+      e.request.url.includes('googleapis.com') ||
       e.request.method !== 'GET') {
     return;
   }
@@ -34,11 +37,10 @@ self.addEventListener('fetch', e => {
       if (cached) return cached;
       return fetch(e.request).then(resp => {
         if (resp && resp.status === 200 && resp.type === 'basic') {
-          const clone = resp.clone();
-          caches.open(CACHE).then(cache => cache.put(e.request, clone));
+          caches.open(CACHE).then(cache => cache.put(e.request, resp.clone()));
         }
         return resp;
-      }).catch(() => caches.match('/index.html'));
+      }).catch(() => caches.match(BASE + 'index.html'));
     })
   );
 });
